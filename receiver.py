@@ -83,8 +83,10 @@ def main():
             value_array.append(bit_buffer)
             receiving = transmission_started(bit_buffer)
             if receiving:
+                buffer_counter = 0  # reset counter before we head into the receiving loop
                 break
             buffer_counter = 0
+        time.sleep(0.016666667)  # Effectively a 60Hz polling rate
 
     # receiving loop
     while receiving:
@@ -96,9 +98,11 @@ def main():
             if not receiving:
                 break
             buffer_counter = 0
+        time.sleep(0.016666667)  # Effectively a 60Hz polling rate
 
     message = get_ascii_from_transmission_bits(value_array)
     print(message)
+
 
 if __name__ == '__main__':
     main()
