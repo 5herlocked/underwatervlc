@@ -48,6 +48,17 @@ def transmission_started(bits):
     return True
 
 
+def transmission_ended(bits):
+    if len(bits) == 16:
+        for i in bits:
+            if i != 0:
+                return False
+            else:
+                continue
+    else:
+        return False
+
+
 def main():
     # Pin Setup:
     # Board pin-numbering
@@ -66,24 +77,28 @@ def main():
 
     # not receiving loop
     while True:
-        value = GPIO.input(input_pin)
-        if buffer_counter >= 16:
-            buffer_counter = 0
-        else:
-            bit_buffer[buffer_counter] = convert_gpio_to_value(value)
-            buffer_counter += 1
-
-        if buffer_counter == 15 and transmission_started(bit_buffer) and not receiving:
+        bit_buffer[buffer_counter] = convert_gpio_to_value(GPIO.input(input_pin))
+        # we only need to check when buffer_counter hits 15
+        if buffer_counter == 15:
             value_array.append(bit_buffer)
-            break
-
-        if receiving:
-
+            receiving = transmission_started(bit_buffer)
+            if receiving:
+                break
+            buffer_counter = 0
 
     # receiving loop
     while receiving:
-        break
+        bit_buffer[buffer_counter] = convert_gpio_to_value(GPIO.input(input_pin))
 
+        if buffer_counter == 15:
+            value_array.append(bit_buffer)
+            receiving = transmission_ended(bit_buffer)
+            if not receiving:
+                break
+            buffer_counter = 0
+
+    message = get_ascii_from_transmission_bits(value_array)
+    print(message)
 
 if __name__ == '__main__':
     main()
