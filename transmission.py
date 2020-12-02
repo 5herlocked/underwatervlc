@@ -4,6 +4,7 @@ import time
 
 output_pin = 18  # BCM pin 18, Board Pin 12
 
+
 def text_to_bits(text, encoding='ascii', errors='surrogatepass'):
     bits = bin(int(hexlify(text.encode(encoding, errors)), 16))[2:]
     return bits.zfill(8 * ((len(bits) + 7) // 8))
