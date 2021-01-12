@@ -1,6 +1,8 @@
 from binascii import hexlify
 import Jetson.GPIO as GPIO
+
 import time
+import logging
 
 output_pin = 18  # BCM pin 18, Board Pin 12
 
@@ -50,17 +52,14 @@ def convert_ascii_to_transmission_bits(text):
     return bit_array
 
 
-def main(to_transmit):
-    # Pin Setup:
-    GPIO.setmode(GPIO.BCM)  # BCM pin-numbering as in Raspberry Pi
+def create_transmission(commands):
+    times = int(commands[1])  # find out how many times we want to transmit
+    transmission = convert_ascii_to_transmission_bits(commands[0])  # converts ascii to bits
+    print_bits(transmission)  # prints out the transmission
+    return transmission * times  # multiplies it by the number of times to be repeated
 
-    # set pin as an output pin with initial state low
-    GPIO.setup(output_pin, GPIO.OUT, initial=GPIO.LOW)
 
-    print("Starting transmission now")
-    transmission_bits = convert_ascii_to_transmission_bits()
-    print_bits(transmission_bits)
-
+def transmit(transmission_bits):
     current_pos = 0
     try:
         while True:
@@ -69,10 +68,34 @@ def main(to_transmit):
 
             GPIO.output(output_pin, transmission_bits[current_pos])
             current_pos += 1
-            time.sleep(0.033333333)  # effectively a 30Hz transmission rate
+            time.sleep(1 / 30)  # effectively a 30Hz transmission rate
     finally:
         GPIO.cleanup()
 
 
+def main():
+    # logging config
+    logging.basicConfig(filename='transmitter.log', level=logging.INFO, format='%(asctime)s %(message)s')
+
+    # Pin Setup:
+    GPIO.setmode(GPIO.BCM)  # BCM pin-numbering as in Raspberry Pi
+
+    # set pin as an output pin with initial state low
+    GPIO.setup(output_pin, GPIO.OUT, initial=GPIO.LOW)
+
+    print("Welcome to the transmission REPL.")
+    print("Command format is: <String>, <number>(optional)")
+
+    while True:
+        line = input('> ')
+        command = line.split(',')
+        if len(command) < 2:
+            command.append("1")
+        transmission = create_transmission(command)
+        print("Transmitting")
+        logging.info("{0}, {1} times".format(convert_ascii_to_transmission_bits(command[0]), command[1]))
+        transmit(transmission)
+
+
 if __name__ == '__main__':
-    main("hello world")
+    main()
