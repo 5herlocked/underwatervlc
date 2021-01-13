@@ -42,6 +42,7 @@ def print_bits(bits):
 def interrupt_handler(sig, frame):
     print("You've pressed Ctrl+C!")
     logging.info("Program ending")
+    GPIO.cleanup(input_pin)
     sys.exit(0)
 
 
@@ -58,7 +59,7 @@ def int2bytes(i):
 
 def transmission_state(bits):
     start = True if bits[0] == 1 else False
-    if len(bits) == 16:
+    if len(bits) == 32:
         for i in bits:
             if start:
                 if i != 1:
@@ -97,7 +98,9 @@ def main():
     tracking_window = [0, 0]
 
     while True:
-        value_array.append(convert_gpio_to_value(GPIO.input(input_pin)))
+        pin_value = convert_gpio_to_value(GPIO.input(input_pin))
+        value_array.append(pin_value)
+        logging.info("Polled: {0}".format(pin_value))
         if tracking_window[1] >= 32:
             receiving = transmission_state(value_array[tracking_window[0]:tracking_window[1]])
             tracking_window[0] += 1
@@ -119,7 +122,6 @@ def main():
                 logging.info("Received: {0}".format(ascii_transmission))
                 print(ascii_transmission)
                 value_array.clear()
-
         tracking_window[1] += 1
 
         time.sleep(1 / 60)  # Effectively a 60Hz polling rate
