@@ -1,8 +1,19 @@
 from binascii import unhexlify
+from enum import Enum
+
 import Jetson.GPIO as GPIO
 import time
+import logging
+import sys
+import signal
 
 input_pin = 18  # BCM pin 18, BOARD pin 12
+
+
+class Receiving(Enum):
+    STARTED = 1
+    ENDED = 2
+    NEITHER = 3
 
 
 def convert_gpio_to_value(gpio_value):
@@ -10,6 +21,28 @@ def convert_gpio_to_value(gpio_value):
         return 1
     else:
         return 0
+
+
+def print_bits(bits):
+    print()
+    i = 0
+    internal_counter = 0
+    while i < len(bits):
+        print(bits[i], end="")
+        i += 1
+        internal_counter += 1
+        if internal_counter == 8:
+            print(end=" ")
+        if internal_counter == 16:
+            print()
+            internal_counter = 0
+    print()
+
+
+def interrupt_handler(sig, frame):
+    print("You've pressed Ctrl+C!")
+    logging.info("Program ending")
+    sys.exit(0)
 
 
 def text_from_bits(bits, encoding='ascii', errors='surrogatepass'):
@@ -23,85 +56,73 @@ def int2bytes(i):
     return unhexlify(hex_string.zfill(n + (n & 1)))
 
 
-def get_ascii_from_transmission_bits(bits):
-    ascii_array = ""
-
-    for i in range(len(bits)):
-        if i <= 17 or i >= len(bits) - 16:
-            continue
-        if i % 2 == 0:
-            continue
-        ascii_array += str(bits[i])
-    return str(ascii_array)
-
-
-def transmission_started(bits):
+def transmission_state(bits):
+    start = True if bits[0] == 1 else False
     if len(bits) == 16:
         for i in bits:
-            if i != 1:
-                return False
+            if start:
+                if i != 1:
+                    return Receiving.NEITHER
+                else:
+                    continue
             else:
-                continue
+                if i != 0:
+                    return Receiving.NEITHER
+                else:
+                    continue
+        # Checks if the transmission should be starting or ending
+        logging.info("Receiving Started" if start else "Receiving Ended")
+        return Receiving.STARTED if start else Receiving.ENDED
     else:
-        return False
-
-    return True
-
-
-def transmission_ended(bits):
-    if len(bits) == 16:
-        for i in bits:
-            if i != 0:
-                return False
-            else:
-                continue
-    else:
-        return False
+        # bits for some reason is less than 16 (really shouldn't be happening)
+        return Receiving.NEITHER
 
 
 def main():
+    logging.basicConfig(filename="receiver.log", level=logging.INFO, format='%(asctime)s %(message)s')
+    signal.signal(signal.SIGINT, interrupt_handler)
     # Pin Setup:
-    # Board pin-numbering
-    GPIO.setmode(GPIO.BCM)
+    GPIO.setmode(GPIO.BCM)  # BCM pin-numbering as in Raspberry Pi
 
     # set pin as an input pin with initial state
     GPIO.setup(input_pin, GPIO.IN)
 
-    print("Starting demo now! Press Ctrl+C to exit")
+    print("Welcome to the receiver readout")
+    print("This will print out the receiver values and auto formats it into 2 bit chunks")
 
-    receiving = False
+    receiving = Receiving.NEITHER
 
+    transmission_bits = [0, 0]
     value_array = []
-    bit_buffer = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]  # 16 bit buffer
-    buffer_counter = 0
+    tracking_window = [0, 0]
 
-    # not receiving loop
     while True:
-        bit_buffer[buffer_counter] = convert_gpio_to_value(GPIO.input(input_pin))
-        # we only need to check when buffer_counter hits 15
-        if buffer_counter == 15:
-            value_array.append(bit_buffer)
-            receiving = transmission_started(bit_buffer)
-            if receiving:
-                buffer_counter = 0  # reset counter before we head into the receiving loop
-                break
-            buffer_counter = 0
-        time.sleep(0.016666667)  # Effectively a 60Hz polling rate
+        value_array.append(convert_gpio_to_value(GPIO.input(input_pin)))
+        if tracking_window[1] >= 32:
+            receiving = transmission_state(value_array[tracking_window[0]:tracking_window[1]])
+            tracking_window[0] += 1
+        if receiving == Receiving.STARTED or receiving == Receiving.ENDED:
+            if receiving == Receiving.STARTED:
+                transmission_bits[0] = tracking_window[0]
+            if receiving == Receiving.ENDED:
+                transmission_bits[1] = tracking_window[1]
+                print("Transmission received successfully")
+                print("Received Binary Transmission: ")
+                print_bits(value_array)
+                logging.info("Received: {0}".format(value_array))
+                print("Conversion to ASCII: ")
+                # value array is at 60 Hz while the transmission is only 30 hz
+                # stepping by two to half the bits in the transmission (to set it into 30hz)
+                # We'll need to improve this so that we can actually analyse all the bits to ensure
+                # maximum accuracy
+                ascii_transmission = text_from_bits(value_array[transmission_bits[0]:transmission_bits[1]:2])
+                logging.info("Received: {0}".format(ascii_transmission))
+                print(ascii_transmission)
+                value_array.clear()
 
-    # receiving loop
-    while receiving:
-        bit_buffer[buffer_counter] = convert_gpio_to_value(GPIO.input(input_pin))
+        tracking_window[1] += 1
 
-        if buffer_counter == 15:
-            value_array.append(bit_buffer)
-            receiving = transmission_ended(bit_buffer)
-            if not receiving:
-                break
-            buffer_counter = 0
-        time.sleep(0.016666667)  # Effectively a 60Hz polling rate
-
-    message = get_ascii_from_transmission_bits(value_array)
-    print(message)
+        time.sleep(1 / 60)  # Effectively a 60Hz polling rate
 
 
 if __name__ == '__main__':
