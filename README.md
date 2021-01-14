@@ -55,7 +55,7 @@ Follow the given steps to prepare the Xavier for the ZED camera:
 Follow the given steps to prepare the Xavier for Photo-Diodes:
 1. 
 
-# Receiver Instructions
+## Receiver Instructions
 Follow the given steps to start receiving on the Xavier:
 1. 
 2. 
