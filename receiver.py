@@ -75,7 +75,7 @@ def transmission_state(bits):
         logging.info("Receiving Started" if start else "Receiving Ended")
         return Receiving.STARTED if start else Receiving.ENDED
     else:
-        # bits for some reason is less than 16 (really shouldn't be happening)
+        # bits for some reason is other than 32 (really shouldn't be happening)
         return Receiving.NEITHER
 
 
@@ -122,6 +122,8 @@ def main():
                 logging.info("Received: {0}".format(ascii_transmission))
                 print(ascii_transmission)
                 value_array.clear()
+                tracking_window = [0, 0]
+                transmission_bits = [0, 0]
         tracking_window[1] += 1
 
         time.sleep(1 / 60)  # Effectively a 60Hz polling rate

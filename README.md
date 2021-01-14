@@ -1,37 +1,63 @@
-## Welcome to GitHub Pages
+## Jetson Nano Setup Instructions
+Follow the steps given to prepare the Jetson Nano:
+1. Download the [Jetson Developer Kit Image](https://developer.nvidia.com/jetson-nano-sd-card-image)
+2. Write the image to an SD card using one of the following:
+	* Unix Disk Utilities (Disk Analyser) using the restore image/restore disk function
+	* Windows Disk Manager (diskmgmgt) using the restore image/restore disk function
+	* Balena Etcher (with low-medium sucess) using the flash button
+3. Insert the SD card into the Jetson Nano
+4. Boot it up, follow setup instructions until you boot into the linux desktop (it will restart once)
+5. Run the command `sudo apt-get update` and follow instructions to update all tools
+6. Run the command `sudo apt-get upgrade` and follow instructions to upgrade all tools
+7. Ensure python 3 is installed by running the command `python3 --version` if you get an output it is installed and proceed to step 9
+8. Python3 is not installed: install using the command `sudo apt-get install python3`
+9. Python3 is installed and all packages are updated to latest version. Install the wheel package using `pip3 install wheel`
+10. Install the Jetson.GPIO package with the command `pip3 install Jetson.GPIO`
+11. Visit the [GitHub page](https://github.com/NVIDIA/jetson-gpio) for the Jetson.GPIO package and follow the instructions for setting user permissions
+11. Follow [instructions](https://docs.github.com/en/free-pro-team@latest/github/authenticating-to-github/generating-a-new-ssh-key-and-adding-it-to-the-ssh-agent) to make an SSH key, adding it to your account in GitHub and use it to authenticate with GitHub.
+12. Clone our github repository by typing in `git clone git@github.com:ashwinashok/underwatervlc.git` and the following the prompt to get our code
+Next instructions are [here](#Transmitter-Instructions):
 
-You can use the [editor on GitHub](https://github.com/ashwinashok/underwatervlc/edit/main/README.md) to maintain and preview the content for your website in Markdown files.
+## Xavier Setup Instructions
+These are the steps to get the Xavier's setup and ready for experimentation:
+1. Download the [Jetson Xavier NX Developer Kit Image](https://developer.nvidia.com/jetson-nx-developer-kit-sd-card-image)
+2. Write the image to an SD card using one of the following:
+	* Unix Disk Utilities (Disk Analyser) using the restore image/restore disk function
+	* Windows Disk Manager (diskmgmgt) using the restore image/restore disk function
+	* Balena Etcher (with low-medium sucess) using the flash button
+3. Insert the SD card into the Jetson Xavier NX.
+4. Boot it up, follow setup instructions until you boot into the linux desktop (it will restart once)
+5. Run the command `sudo apt-get update` and follow instructions to update all tools
+6. Run the command `sudo apt-get upgrade` and follow instructions to upgrade all tools
+7. Ensure python 3 is installed by running the command `python3 --version` if you get an output, it is installed and proceed to step 9
+8. Python3 is not installed: install using the command `sudo apt-get install python3`
+9. Python3 is installed and all packages are updated to latest version. Install the wheel package using `pip3 install wheel`
+10. Install the Jetson.GPIO package with the command `pip3 install Jetson.GPIO`
+11. Visit the [GitHub page](https://github.com/NVIDIA/jetson-gpio) for the Jetson.GPIO package and follow the instructions for setting user permissions
+11. Follow [instructions](https://docs.github.com/en/free-pro-team@latest/github/authenticating-to-github/generating-a-new-ssh-key-and-adding-it-to-the-ssh-agent) to make an SSH key, adding it to your account in GitHub and use it to authenticate with GitHub.
+12. Clone our github repository by typing in `git clone git@github.com:ashwinashok/underwatervlc.git` and then follow the prompt to get our code
+13. Get the [ZED SDK](https://download.stereolabs.com/zedsdk/3.3/jp44/jetsons) make it an executable and run it to install the ZED SDK
+14. Use the command `cd /usr/local/zed` and then run `python3 get_python_api.py` to install the python api for the ZED SDK.
 
-Whenever you commit to this repository, GitHub Pages will run [Jekyll](https://jekyllrb.com/) to rebuild the pages in your site, from the content in your Markdown files.
+## Transmitter Instructions
+Follow the given steps to start transmitting on the Jetson Nanos:
+1. 
 
-### Markdown
+## GPIO setup
+Follow the steps given to prepare the Jetson's for proper GPIO pin setup:
+1.
 
-Markdown is a lightweight and easy-to-use syntax for styling your writing. It includes conventions for
+## Stereo Camera from ZED Labs
+Follow the given steps to prepare the Xavier for the ZED camera:
+1. 
 
-```markdown
-Syntax highlighted code block
+## Thor Labs photo-diode setup
+Follow the given steps to prepare the Xavier for Photo-Diodes:
+1. 
 
-# Header 1
-## Header 2
-### Header 3
-
-- Bulleted
-- List
-
-1. Numbered
-2. List
-
-**Bold** and _Italic_ and `Code` text
-
-[Link](url) and ![Image](src)
-```
-
-For more details see [GitHub Flavored Markdown](https://guides.github.com/features/mastering-markdown/).
-
-### Jekyll Themes
-
-Your Pages site will use the layout and styles from the Jekyll theme you have selected in your [repository settings](https://github.com/ashwinashok/underwatervlc/settings). The name of this theme is saved in the Jekyll `_config.yml` configuration file.
-
-### Support or Contact
-
-Having trouble with Pages? Check out our [documentation](https://docs.github.com/categories/github-pages-basics/) or [contact support](https://github.com/contact) and we’ll help you sort it out.
+# Receiver Instructions
+Follow the given steps to start receiving on the Xavier:
+1. 
+2. 
+3.
+4. Start the receiver on the Jetson Xavier's: `python3 receiver.py`
