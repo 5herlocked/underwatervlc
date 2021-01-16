@@ -75,7 +75,7 @@ def transmit(transmission_bits):
             logging.info("Transmitted: {0}".format(bit))
             time.sleep(1 / 30)  # effectively a 30Hz transmission rate
     finally:
-        GPIO.cleanup()
+        GPIO.cleanup(output_pin)
 
 
 def main():
