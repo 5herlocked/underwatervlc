@@ -60,14 +60,9 @@ def create_transmission(commands):
 
 
 def transmit(transmission_bits):
-    current_pos = 0
     try:
-        while True:
-            if current_pos == len(transmission_bits):
-                current_pos = 0
-
-            GPIO.output(output_pin, transmission_bits[current_pos])
-            current_pos += 1
+        for bit in transmission_bits:
+            GPIO.output(output_pin, bit)
             time.sleep(1 / 30)  # effectively a 30Hz transmission rate
     finally:
         GPIO.cleanup()
