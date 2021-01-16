@@ -1,10 +1,19 @@
 from binascii import hexlify
 import Jetson.GPIO as GPIO
 
+import signal
+import sys
 import time
 import logging
 
 output_pin = 18  # BCM pin 18, Board Pin 12
+
+
+def interrupt_handler(sig, frame):
+    print("You've pressed Ctrl+C!")
+    logging.info("Program ending")
+    GPIO.cleanup(output_pin)
+    sys.exit(0)
 
 
 def text_to_bits(text, encoding='ascii', errors='surrogatepass'):
@@ -72,7 +81,7 @@ def transmit(transmission_bits):
 def main():
     # logging config
     logging.basicConfig(filename='transmitter.log', level=logging.INFO, format='%(asctime)s %(message)s')
-
+    signal.signal(signal.SIGINT, interrupt_handler)
     # Pin Setup:
     GPIO.setmode(GPIO.BCM)  # BCM pin-numbering as in Raspberry Pi
 
