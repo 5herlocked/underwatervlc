@@ -18,7 +18,7 @@ Follow the steps given to prepare the Jetson Nano:
 12. Clone our github repository by typing in `git clone git@github.com:ashwinashok/underwatervlc.git` and the following the prompt to get our code
 Next instructions are [here](#Transmitter-Instructions):
 
-## Xavier Setup Instructions
+## Jetson Xavier Setup Instructions
 These are the steps to get the Xavier's setup and ready for experimentation:
 1. Download the [Jetson Xavier NX Developer Kit Image](https://developer.nvidia.com/jetson-nx-developer-kit-sd-card-image)
 2. Write the image to an SD card using one of the following:
@@ -39,7 +39,7 @@ These are the steps to get the Xavier's setup and ready for experimentation:
 13. Get the [ZED SDK](https://download.stereolabs.com/zedsdk/3.3/jp44/jetsons) make it an executable and run it to install the ZED SDK
 14. Use the command `cd /usr/local/zed` and then run `python3 get_python_api.py` to install the python api for the ZED SDK.
 
-## Transmitter Instructions
+## LED Transmitter Instructions
 Follow the given steps to start transmitting on the Jetson Nanos:
 1. Connect the LED array positive diode to Board Pin 12
 2. Connect the LED ground pin to one of the GND pins on the Jetson
@@ -47,7 +47,7 @@ Follow the given steps to start transmitting on the Jetson Nanos:
 4. Enter any message that needed to be transmitted with the command expression, `<message>, <number_of_times>`. The program splits on the , so, refrain from using that in the message
 5. There will be a file called `transmitter.log` this will contain all the logs including time stamps of each of the transmitted bits
 
-## Receiver Instructions
+## Photodiode (PD) Receiver Instructions
 Follow the given steps to start receiving on the Xavier:
 1. Connect the Photo-diode to Board Pin 12 and stereo camera to the Xavier
 2. Connect Photo-diode ground to one of the GND pins on the Xavier
