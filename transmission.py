@@ -70,6 +70,11 @@ def create_transmission(commands):
 
 def transmit(transmission_bits):
     try:
+        # Pin Setup:
+        GPIO.setmode(GPIO.BCM)  # BCM pin-numbering as in Raspberry Pi
+
+        # set pin as an output pin with initial state low
+        GPIO.setup(output_pin, GPIO.OUT, initial=GPIO.LOW)
         for bit in transmission_bits:
             GPIO.output(output_pin, bit)
             logging.info("Transmitted: {0}".format(bit))
@@ -82,11 +87,6 @@ def main():
     # logging config
     logging.basicConfig(filename='transmitter.log', level=logging.INFO, format='%(asctime)s %(message)s')
     signal.signal(signal.SIGINT, interrupt_handler)
-    # Pin Setup:
-    GPIO.setmode(GPIO.BCM)  # BCM pin-numbering as in Raspberry Pi
-
-    # set pin as an output pin with initial state low
-    GPIO.setup(output_pin, GPIO.OUT, initial=GPIO.LOW)
 
     print("Welcome to the transmission REPL.")
     print("Command format is: <String>, <number>(optional)")
