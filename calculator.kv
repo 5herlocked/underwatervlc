@@ -1,0 +1,43 @@
+# Custom button 
+<CustButton@Button>: 
+    font_size: 10
+   
+# Define id so I can refer to the CalcGridLayout 
+# class functions 
+# Display points to the entry widget 
+<CalcGridLayout>: 
+    id: calculator 
+    display: entry 
+    rows: 6
+    padding: 10
+    spacing: 10
+  
+    # Where input is displayed 
+    BoxLayout: 
+        TextInput: 
+            id: entry 
+            font_size: 25
+            multiline: False
+        TextInput: 
+            id: sectry
+            font_size: 25
+            multiline: False
+
+    BoxLayout: 
+        spacing: 10
+        CustButton: 
+            text: "text"
+            on_press: entry.text += self.text 
+        CustButton: 
+            background_color: (1.0, 1.0, 0.0, 1.0)
+            text: "START"
+            on_press: calculator.calculate(entry.text)
+        CustButton: 
+            background_color: (1.0, 0.0, 0.0, 1.0)
+            text: "STOP"
+            on_press: calculator.calculate(sectry.text)  
+
+        CustButton: 
+            text: "/"
+            on_press: entry.text += self.text 
+      
