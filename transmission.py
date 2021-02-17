@@ -5,8 +5,11 @@ import signal
 import sys
 import time
 import logging
+import getopt
 
 output_pin = 18  # BCM pin 18, Board Pin 12
+frequency = 1/30  # effectively a 30Hz transmission rate
+message = "Hello World"
 
 
 def interrupt_handler(sig, frame):
@@ -30,28 +33,11 @@ def transmission_mask(bits):
     # transmission with double poll rate
     for bit in bits:
         transmission.append(int(bit))
-        transmission.append(int(bit))
 
     # transmission end mask
     for i in range(16):
         transmission.append(0)
     return transmission
-
-
-def print_bits(bits):
-    print()
-    i = 0
-    internal_counter = 0
-    while i < len(bits):
-        print(bits[i], end="")
-        i += 1
-        internal_counter += 1
-        if internal_counter == 8:
-            print(end=" ")
-        if internal_counter == 16:
-            print()
-            internal_counter = 0
-    print()
 
 
 def convert_ascii_to_transmission_bits(text):
@@ -62,10 +48,8 @@ def convert_ascii_to_transmission_bits(text):
 
 
 def create_transmission(commands):
-    times = int(commands[1])  # find out how many times we want to transmit
-    transmission = convert_ascii_to_transmission_bits(commands[0])  # converts ascii to bits
-    print_bits(transmission)  # prints out the transmission
-    return transmission * times  # multiplies it by the number of times to be repeated
+    transmission = convert_ascii_to_transmission_bits(commands)  # converts ascii to bits
+    return transmission  # multiplies it by the number of times to be repeated
 
 
 def transmit(transmission_bits):
@@ -78,29 +62,39 @@ def transmit(transmission_bits):
         for bit in transmission_bits:
             GPIO.output(output_pin, bit)
             logging.info("Transmitted: {0}".format(bit))
-            time.sleep(1 / 30)  # effectively a 30Hz transmission rate
+            time.sleep(frequency)
     finally:
         GPIO.cleanup(output_pin)
 
 
-def main():
+def main(argv):
+    global output_pin, frequency, message
+    try:
+        opts, args = getopt.getopt(argv, "hp:f:m:", ["pin=", "freq=", "message="])
+    except getopt.GetoptError:
+        print('receiver_basic.py -p <GPIO_Pin> -f <Frequency_for_polling>')
+        sys.exit(2)
+
+    for opt, arg in opts:
+        if opt == '-h':
+            print('receiver_basic.py -p <GPIO_Pin> -f <Frequency_for_polling>')
+            sys.exit()
+        elif opt in ('-p', '--pin'):
+            output_pin = arg
+        elif opt in ('-f', '--freq'):
+            frequency = arg
+        elif opt in ('-m', '--message'):
+            message = arg
+
     # logging config
     logging.basicConfig(filename='transmitter.log', level=logging.INFO, format='%(asctime)s %(message)s')
     signal.signal(signal.SIGINT, interrupt_handler)
 
-    print("Welcome to the transmission REPL.")
-    print("Command format is: <String>, <number>(optional)")
-
-    while True:
-        line = input('> ')
-        command = line.split(',')
-        if len(command) < 2:
-            command.append("1")
-        transmission = create_transmission(command)
-        print("Transmitting")
-        logging.info("Starting Transmission")
-        transmit(transmission)
+    transmission = create_transmission(message)
+    print("Transmitting")
+    logging.info("Starting Transmission")
+    transmit(transmission)
 
 
 if __name__ == '__main__':
-    main()
+    main(sys.argv[1:])
