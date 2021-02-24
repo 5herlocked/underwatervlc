@@ -23,6 +23,7 @@ def main():
     status = cam.open(init)
     if status != sl.ERROR_CODE.SUCCESS:
         print('Camera.open failed')
+        print(repr(status))
         exit(1)
 
     path_output = "./{0}.svo".format(date.today())
@@ -30,6 +31,7 @@ def main():
     err = cam.enable_recording(recording_param)
     if err != sl.ERROR_CODE.SUCCESS:
         print('Enable Recording failed')
+        print(repr(err))
         exit(1)
 
     runtime = sl.RuntimeParameters()
