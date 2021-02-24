@@ -15,11 +15,8 @@ def interrupt_handler(sig, frame):
 
 def main():
     signal.signal(signal.SIGINT, interrupt_handler)
-    init = sl.InitParameters()
-    init.camera_resolution = sl.RESOLUTION.VGA
-    init.camera_fps = 100
-    init.depth_mode = sl.DEPTH_MODE.NONE
-
+    init = sl.InitParameters(camera_resolution=sl.RESOLUTION.VGA, camera_fps=100)
+    
     status = cam.open(init)
     if status != sl.ERROR_CODE.SUCCESS:
         print('Camera.open failed')
@@ -37,8 +34,7 @@ def main():
     runtime = sl.RuntimeParameters()
 
     while True:
-        if cam.grab(runtime) == sl.ERROR_CODE.SUCCESS:
-            print("Grabed")
+        cam.grab(runtime)
 
 
 if __name__ == '__main__':
