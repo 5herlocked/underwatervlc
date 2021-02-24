@@ -14,7 +14,7 @@ def interrupt_handler(sig, frame):
 
 
 def main():
-    signal.signal(signal.SIGTERM, interrupt_handler)
+    signal.signal(signal.SIGINT, interrupt_handler)
     init = sl.InitParameters()
     init.camera_resolution = sl.RESOLUTION.VGA
     init.camera_fps = 100
