@@ -1,12 +1,13 @@
 import configparser
 import paramiko
+import paramiko.transport
 import pysftp
 
 config = configparser.ConfigParser()
 config.read('settings.ini')
 
 transmitters, receivers, cars = [], [], []
-#Need to be global out of class scope? global transmitters, receivers, cars, new_var -K
+# Need to be global out of class scope? global transmitters, receivers, cars, new_var -K
 
 
 def instantiate_config():
@@ -52,22 +53,45 @@ def instantiate_config():
 class Receiver(object):
     def __init__(self, name):
         self.name = name
+        self.running = False
+        self.connected = False
         self.ip = config.get(name, 'ip_address')
         self.uname = config.get(name, 'uname')
         self.password = config.get(name, 'password')
         self.ssh_instance = paramiko.SSHClient()
+        self.transport_instance = None
+        self.session_instance = None
 
     def connect(self):
         self.ssh_instance.connect(hostname=self.ip, username=self.uname, password=self.password)
+
+        # initiate a transport connection with the ssh host
+        self.transport_instance = self.ssh_instance.get_transport()
+        self.session_instance = self.transport_instance.open_session()
+        self.session_instance.setblocking(0)
+        self.session_instance.get_pty()
+        self.session_instance.invoke_shell()
+
+        self.connected = True
         pass
 
     def start_receiver(self, pin, freq):
+        if not self.connected:
+            self.connect()
+
         command = "python3 receiver_basic.py -p {0} -f {1}".format(pin, freq)
         # exec_command is a non-blocking command, so we can do something with the stdout (if we need it)
-        stdin, stdout, stderr = self.ssh_instance.exec_command(command)
+        stdin, stdout, stderr = self.session_instance.send(command)
+
+        self.running = True
         pass
 
     def stop_receiver(self):
+        if not self.running:
+            return
+
+        # sends in the signal CTRL + C signifying SIGINT
+        self.session_instance.send('\x03')
         pass
 
     def get_receiver_log(self):

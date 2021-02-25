@@ -5,7 +5,6 @@ from kivy.config import Config
 from config import *
 from kivy.core.window import Window
 
-
 import pysftp
 import sys
 import signal
@@ -68,7 +67,6 @@ class Trans_Receiver(GridLayout):
 class CalculatorApp(App):
     def build(self):
         return Trans_Receiver()
-
 
 
 if __name__ == "__main__":

@@ -69,6 +69,8 @@ def transmit(transmission_bits):
 
 def main(argv):
     global output_pin, frequency, message
+    if len(argv) == 1:
+        print('Using default values of: Output Pin = Board 12, Frequency = 30 Hz')
     try:
         opts, args = getopt.getopt(argv, "hp:f:m:", ["pin=", "freq=", "message="])
     except getopt.GetoptError:
