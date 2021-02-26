@@ -1,7 +1,7 @@
 import pyzed.sl as sl
 import signal
 import sys
-from datetime import date
+from datetime import *
 
 cam = sl.Camera()  # Initialise Camera
 
@@ -23,7 +23,7 @@ def main():
         print(repr(status))
         exit(1)
 
-    path_output = "./{0}.svo".format(date.today())
+    path_output = "./{0}.svo".format(datetime.now().strftime('%m-%d-%Y %H:%M:%S'))
     recording_param = sl.RecordingParameters(path_output, sl.SVO_COMPRESSION_MODE.H264)
     err = cam.enable_recording(recording_param)
     if err != sl.ERROR_CODE.SUCCESS:
