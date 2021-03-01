@@ -1,4 +1,4 @@
-from binascii import unhexlify
+import binascii
 from enum import Enum
 
 import Jetson.GPIO as GPIO
@@ -59,7 +59,7 @@ def text_from_bits(bits, encoding='ascii', errors='surrogatepass'):
 def int2bytes(i):
     hex_string = '%x' % i
     n = len(hex_string)
-    return unhexlify(hex_string.zfill(n + (n & 1)))
+    return binascii.unhexlify(hex_string.zfill(n + (n & 1)))
 
 
 def transmission_state(bits):

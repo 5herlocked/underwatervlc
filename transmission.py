@@ -1,4 +1,6 @@
-from binascii import hexlify
+import binascii
+from datetime import *
+
 import Jetson.GPIO as GPIO
 
 import signal
@@ -7,8 +9,8 @@ import time
 import logging
 import getopt
 
-output_pin = 18  # BCM pin 18, Board Pin 12
-frequency = 1/30  # effectively a 30Hz transmission rate
+output_pin = 12  # Board Pin 12
+frequency = 30  # effectively a 30Hz transmission rate
 message = "Hello World"
 
 
@@ -20,7 +22,7 @@ def interrupt_handler(sig, frame):
 
 
 def text_to_bits(text, encoding='ascii', errors='surrogatepass'):
-    bits = bin(int(hexlify(text.encode(encoding, errors)), 16))[2:]
+    bits = bin(int(binascii.hexlify(text.encode(encoding, errors)), 16))[2:]
     return bits.zfill(8 * ((len(bits) + 7) // 8))
 
 
@@ -55,16 +57,23 @@ def create_transmission(commands):
 def transmit(transmission_bits):
     try:
         # Pin Setup:
-        GPIO.setmode(GPIO.BCM)  # BCM pin-numbering as in Raspberry Pi
+        GPIO.setmode(GPIO.BOARD)  # BCM pin-numbering as in Raspberry Pi
 
         # set pin as an output pin with initial state low
         GPIO.setup(output_pin, GPIO.OUT, initial=GPIO.LOW)
         for bit in transmission_bits:
             GPIO.output(output_pin, bit)
             logging.info("Transmitted: {0}".format(bit))
-            time.sleep(frequency)
+            time.sleep(1/frequency)
     finally:
         GPIO.cleanup(output_pin)
+
+
+def usage():
+    print('transmission.py -p <output_pin> -f <frequency_to_transmit> -m <message_to_send>')
+    print('-p or --pin\t: Pin to transmit out to')
+    print('-f or --frequency\t: Frequency to transmit at')
+    print('-m or --message\t: Message to send')
 
 
 def main(argv):
@@ -74,22 +83,22 @@ def main(argv):
     try:
         opts, args = getopt.getopt(argv, "hp:f:m:", ["pin=", "freq=", "message="])
     except getopt.GetoptError:
-        print('receiver_basic.py -p <GPIO_Pin> -f <Frequency_for_polling>')
+        usage()
         sys.exit(2)
 
     for opt, arg in opts:
         if opt == '-h':
-            print('receiver_basic.py -p <GPIO_Pin> -f <Frequency_for_polling>')
+            usage()
             sys.exit()
         elif opt in ('-p', '--pin'):
             output_pin = arg
         elif opt in ('-f', '--freq'):
-            frequency = arg
+            frequency = int(arg)
         elif opt in ('-m', '--message'):
             message = arg
 
     # logging config
-    logging.basicConfig(filename='transmitter.log', level=logging.INFO, format='%(asctime)s %(message)s')
+    logging.basicConfig(filename='transmitter-{0}.log'.format(datetime.now().strftime('%m-%d-%Y-%H:%M:%S')), level=logging.INFO, format='%(asctime)s %(message)s')
     signal.signal(signal.SIGINT, interrupt_handler)
 
     transmission = create_transmission(message)
