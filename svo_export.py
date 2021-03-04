@@ -14,7 +14,7 @@ def progress_bar(percent_done, bar_length=50):
 
 
 def usage():
-    print('svo_export.py -f <file_path>')
+    print('svo_export.py -f <file_path> -o <output_name>')
     print('-f or --file\t: File path of the svo file to export')
     print('-o or --output\t: Output names for the mp4 and obj files')
 
@@ -36,6 +36,15 @@ def main(argv):
             file = arg
         elif opt in ('-o', '--output'):
             output_name = arg
+        else:
+            print('Unrecognised option')
+            usage()
+            exit()
+
+    if output_name == "":
+        print('You need to define the output name using the -o option')
+        usage()
+        sys.exit(-1)
 
     # Make directory to put the video, depth image sequences and SBS pngs
     video_path = "{0}/".format(output_name)
@@ -114,7 +123,7 @@ def main(argv):
     cam.disable_positional_tracking()
 
     # Start SVO conversion to AVI/SEQUENCE
-    sys.stdout.write("Converting SVO to MP4 Use Ctrl-C to interrupt conversion.\n")
+    sys.stdout.write("Converting SVO to AVI Use Ctrl-C to interrupt conversion.\n")
     nb_frames = cam.get_svo_number_of_frames()
     left_image = sl.Mat()
     right_image = sl.Mat()

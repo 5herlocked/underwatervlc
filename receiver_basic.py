@@ -26,7 +26,7 @@ def pretty_bits(bits):
     i = 0
     internal_counter = 0
     while i < len(bits):
-        prettified_bits += bits[i]
+        prettified_bits += str(bits[i])
         i += 1
         internal_counter += 1
         if internal_counter == 8:
