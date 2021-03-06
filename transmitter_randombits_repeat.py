@@ -1,4 +1,3 @@
-import binascii
 from datetime import *
 
 import Jetson.GPIO as GPIO
@@ -14,7 +13,7 @@ output_pin = 12  # Board Pin 12
 frequency = 30  # effectively a 30Hz transmission rate
 # variables for random bit transmission
 random_flag = False
-random_size = 1000
+random_size = 500
 times = 1
 # variables for perma state transmission
 state_flag = False
@@ -40,7 +39,7 @@ def transmit(transmission_bits):
         # set pin as an output pin with initial state low
         GPIO.setup(output_pin, GPIO.OUT, initial=GPIO.LOW)
         for bit in transmission_bits:
-            GPIO.output(output_pin, bit)
+            GPIO.output(output_pin, int(bit))
             logging.info("Transmitted: {0}".format(bit))
             time.sleep(1/frequency)
     finally:
@@ -84,7 +83,7 @@ def main(argv):
     if len(argv) == 1:
         print('Using default values of: Output Pin = Board 12, Frequency = 30 Hz')
     try:
-        opts, args = getopt.getopt(argv, "hs:r:f:", ["state=", "random=", "frequency="])
+        opts, args = getopt.getopt(argv, "hs:r:f:t:", ["state=", "random=", "frequency=", "times="])
     except getopt.GetoptError:
         usage()
         sys.exit(2)
@@ -105,20 +104,27 @@ def main(argv):
             times = int(arg)
 
     # logging config
-    logging.basicConfig(filename='transmitter-{0}.log'.format(datetime.now().strftime('%m-%d-%Y-%H:%M:%S')), level=logging.INFO, format='%(asctime)s %(message)s')
+    # ToDo: Change the filename here if in the future our datasets change
+    logging.basicConfig(filename='transmitter_{0}Hz_{1}_cycles-{2}_bits.log'.format(frequency, times, random_size),
+                        level=logging.INFO, format='%(asctime)s %(message)s')
     signal.signal(signal.SIGINT, interrupt_handler)
 
     if state_flag:
+        GPIO.setmode(GPIO.BOARD)
         GPIO.setup(output_pin, GPIO.OUT, initial=perma_state)
         GPIO.output(output_pin, perma_state)
         print('Output set to permanent state: {0}'.format(perma_state))
-    elif random:
-        transmission = create_transmission(generate_random_bitstream(random_size), times)
+        GPIO.cleanup(output_pin)
+    elif random_flag:
+        random_bits = generate_random_bitstream(random_size)
+        logging.info("Generated bitstream: {0}".format(random_bits))
+        transmission = create_transmission(random_bits, times)
         print("Transmitting")
         logging.info("Starting Transmission")
         transmit(transmission)
     else:
         print('No flags set, exiting')
+        usage()
         sys.exit(0)
 
 
