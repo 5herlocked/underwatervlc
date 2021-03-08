@@ -2,6 +2,7 @@ import pyzed.sl as sl
 import signal
 import sys
 from datetime import *
+import getopt
 
 cam = sl.Camera()  # Initialise Camera
 
@@ -13,7 +14,30 @@ def interrupt_handler(sig, frame):
     sys.exit(0)
 
 
-def main():
+def usage():
+    print('zed_record.py -o <output_name>')
+    print('-o or --output\t:  File path of the svo to generate')
+
+
+def main(argv):
+    output_name = datetime.now().strftime('%m-%d-%Y_%H:%M:%S')
+    try:
+        opts, args = getopt.getopt(argv, "ho:", ["output="])
+    except getopt.GetoptError:
+        usage()
+        sys.exit(2)
+
+    for opt, arg in opts:
+        if opt == '-h':
+            usage()
+            sys.exit()
+        elif opt in ('-o', '--output'):
+            output_name = arg
+        else:
+            print('Unrecognised option')
+            usage()
+            exit()
+
     signal.signal(signal.SIGINT, interrupt_handler)
     init = sl.InitParameters()
     init.camera_resolution = sl.RESOLUTION.VGA
@@ -28,7 +52,7 @@ def main():
         print(repr(status))
         exit(1)
 
-    path_output = "./{0}.svo".format(datetime.now().strftime('%m-%d-%Y_%H:%M:%S'))
+    path_output = "./{0}.svo".format(output_name)
     recording_param = sl.RecordingParameters(path_output, sl.SVO_COMPRESSION_MODE.H264)
     err = cam.enable_recording(recording_param)
     if err != sl.ERROR_CODE.SUCCESS:
@@ -43,4 +67,4 @@ def main():
 
 
 if __name__ == '__main__':
-    main()
+    main(sys.argv[1:])

@@ -4,6 +4,14 @@ import getopt
 import sys
 import cv2
 import os
+import glob
+
+
+def usage():
+    print('svo_export.py -f <file_path> -o <output_name>')
+    print('-f or --file\t: File path of the svo file to export')
+    print('-o or --output\t: Output names for the mp4 and obj files')
+    print('-d or --folder\t: Folder path full of svo files that need to be exported')
 
 
 def progress_bar(percent_done, bar_length=50):
@@ -13,39 +21,7 @@ def progress_bar(percent_done, bar_length=50):
     sys.stdout.flush()
 
 
-def usage():
-    print('svo_export.py -f <file_path> -o <output_name>')
-    print('-f or --file\t: File path of the svo file to export')
-    print('-o or --output\t: Output names for the mp4 and obj files')
-
-
-def main(argv):
-    file = ""
-    output_name = ""
-    try:
-        opts, args = getopt.getopt(argv, "hf:o:", ["file=", "output="])
-    except getopt.GetoptError:
-        usage()
-        sys.exit(2)
-
-    for opt, arg in opts:
-        if opt == '-h':
-            usage()
-            sys.exit()
-        elif opt in ('-f', '--file'):
-            file = arg
-        elif opt in ('-o', '--output'):
-            output_name = arg
-        else:
-            print('Unrecognised option')
-            usage()
-            exit()
-
-    if output_name == "":
-        print('You need to define the output name using the -o option')
-        usage()
-        sys.exit(-1)
-
+def export(file, output_name):
     # Make directory to put the video, depth image sequences and SBS pngs
     video_path = "{0}/".format(output_name)
     png_path = video_path + "png_sequences/"
@@ -86,7 +62,8 @@ def main(argv):
     # prepare side by side container
     svo_image_sbs_rgba = np.zeros((height, width_sbs, 4), dtype=np.uint8)
 
-    video_writer = cv2.VideoWriter(video_path + '{0}.avi'.format(output_name), cv2.VideoWriter_fourcc('M', '4', 'S', '2'),
+    video_writer = cv2.VideoWriter(video_path + '{0}.avi'.format(output_name),
+                                   cv2.VideoWriter_fourcc('M', '4', 'S', '2'),
                                    max(cam.get_camera_information().camera_fps, 25), (width_sbs, height))
 
     if not video_writer.isOpened():
@@ -155,7 +132,76 @@ def main(argv):
 
     video_writer.release()
     cam.close()
-    return 0
+
+
+def main(argv):
+    file = ""
+    output_name = ""
+    folder_flag = False
+    folder_path = ""
+    try:
+        opts, args = getopt.getopt(argv, "hd:f:o:", ["folder=", "file=", "output="])
+    except getopt.GetoptError:
+        usage()
+        sys.exit(2)
+
+    for opt, arg in opts:
+        if opt == '-h':
+            usage()
+            sys.exit()
+        elif opt in ('-d', '--folder'):
+            folder_flag = True
+            folder_path = arg
+        elif opt in ('-f', '--file'):
+            file = arg
+        elif opt in ('-o', '--output'):
+            output_name = arg
+        else:
+            print('Unrecognised option')
+            usage()
+            exit()
+
+    # output deduction system
+    # TODO: Fix output deduction system
+    if not folder_flag and output_name == "":
+        print('Deducing the output based on the file name')
+        try:
+            output_name = file.split('.')[0]
+        except:
+            print("Provided file does not have an extension")
+            usage()
+            sys.exit()
+        print('Deduced output name: {0}'.format(file.split('.')[0]))
+        acceptable_flag = False
+        while not acceptable_flag:
+            print('Is this acceptable? (y/n)')
+            acceptable = input().lower()
+
+            if acceptable in ('n', 'no'):
+                print('Exiting, use the -o flag to define the name of the output')
+                usage()
+                sys.exit(2)
+            elif acceptable in ('y', 'yes'):
+                print('Using deduced output folder: {0}'.format(output_name))
+                acceptable_flag = True
+            else:
+                acceptable_flag = False
+
+    # folder input logic
+    if folder_flag:
+        if not folder_path.endswith('/'):
+            folder_path += '/'
+        # fetches all svos in the folder
+        file = glob.glob(folder_path + "*.svo", recursive=False)
+        # filters the name of the file and then sends it off to export
+        for path in file:
+            mod_path = ""
+            if path.startswith(".\\"):
+                mod_path = path.removeprefix('.\\')
+            mod_path = mod_path.removesuffix('.svo')
+            export(path, mod_path)
+    else:
+        export(file, output_name)
 
 
 if __name__ == '__main__':

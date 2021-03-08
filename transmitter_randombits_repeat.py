@@ -27,8 +27,8 @@ def interrupt_handler(sig, frame):
     sys.exit(0)
 
 
-def create_transmission(bitstream, times):
-    return bitstream * times  # multiplies it by the number of times to be repeated
+def create_transmission(bitstream, times_to_multiply):
+    return bitstream * times_to_multiply  # multiplies it by the number of times to be repeated
 
 
 def transmit(transmission_bits):
@@ -103,10 +103,6 @@ def main(argv):
         elif opt in ('-t', '--times'):
             times = int(arg)
 
-    # logging config
-    # ToDo: Change the filename here if in the future our datasets change
-    logging.basicConfig(filename='transmitter_{0}Hz_{1}_cycles-{2}_bits.log'.format(frequency, times, random_size),
-                        level=logging.INFO, format='%(asctime)s %(message)s')
     signal.signal(signal.SIGINT, interrupt_handler)
 
     if state_flag:
@@ -116,6 +112,10 @@ def main(argv):
         print('Output set to permanent state: {0}'.format(perma_state))
         GPIO.cleanup(output_pin)
     elif random_flag:
+        # logging config
+        # ToDo: Change the filename here if in the future our datasets change
+        logging.basicConfig(filename='transmitter_{0}Hz_{1}_cycles-{2}_bits.log'.format(frequency, times, random_size),
+                            level=logging.INFO, format='%(asctime)s %(message)s')
         random_bits = generate_random_bitstream(random_size)
         logging.info("Generated bitstream: {0}".format(random_bits))
         transmission = create_transmission(random_bits, times)
