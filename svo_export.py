@@ -42,8 +42,8 @@ def export(file, output_name):
     input_type.set_from_svo_file(file)
     # initialise the camera parameters
     init = sl.InitParameters(input_t=input_type, svo_real_time_mode=False)
-    init.coordinate_system = sl.COORDINATE_SYSTEM.RIGHT_HANDED_Y_UP
-    init.coordinate_units = sl.UNIT.METER
+    init.depth_mode = sl.DEPTH_MODE.ULTRA
+    init.coordinate_units = sl.UNIT.MILLIMETER
 
     # initialise the camera
     cam = sl.Camera()
@@ -62,6 +62,11 @@ def export(file, output_name):
     # prepare side by side container
     svo_image_sbs_rgba = np.zeros((height, width_sbs, 4), dtype=np.uint8)
 
+    # prepare left, right and depth containers
+    left_image = sl.Mat()
+    right_image = sl.Mat()
+    depth_image = sl.Mat()
+
     video_writer = cv2.VideoWriter(video_path + '{0}.avi'.format(output_name),
                                    cv2.VideoWriter_fourcc('M', '4', 'S', '2'),
                                    max(cam.get_camera_information().camera_fps, 25), (width_sbs, height))
@@ -73,38 +78,11 @@ def export(file, output_name):
         exit(-1)
 
     runtime = sl.RuntimeParameters()
-
-    py_transform = sl.Transform()
-    tracking_parameters = sl.PositionalTrackingParameters(py_transform)
-    err = cam.enable_positional_tracking(tracking_parameters)
-    if err != sl.ERROR_CODE.SUCCESS:
-        print('Positional Tracking cannot be enabled')
-        exit(1)
-
-    mapping_parameters = sl.SpatialMappingParameters(map_type=sl.SPATIAL_MAP_TYPE.FUSED_POINT_CLOUD)
-    err = cam.enable_spatial_mapping(mapping_parameters)
-    if err != sl.ERROR_CODE.SUCCESS:
-        print('Spatial Mapping failed')
-        exit(1)
-
-    sys.stdout.write('Converting SVO to OBJ Use Ctrl-C to interrupt\n')
-    py_fpc = sl.FusedPointCloud()
-
-    print('Extracting Point Cloud')
-    err = cam.extract_whole_spatial_map(py_fpc)
-    print(repr(err))
-    print('Saving Point Cloud')
-    py_fpc.save(video_path + "{0}.obj".format(output_name))
-
-    cam.disable_spatial_mapping()
-    cam.disable_positional_tracking()
+    runtime.sensing_mode = sl.SENSING_MODE.FILL
 
     # Start SVO conversion to AVI/SEQUENCE
     sys.stdout.write("Converting SVO to AVI Use Ctrl-C to interrupt conversion.\n")
     nb_frames = cam.get_svo_number_of_frames()
-    left_image = sl.Mat()
-    right_image = sl.Mat()
-    depth_image = sl.Mat()
 
     while True:
         if cam.grab(runtime) == sl.ERROR_CODE.SUCCESS:

@@ -57,7 +57,6 @@ def usage():
 
 
 def get_perma_state(input_state):
-    state = GPIO.LOW
     if input_state in ('ON', 'on'):
         state = GPIO.HIGH
     elif input_state in ('OFF', 'of'):
