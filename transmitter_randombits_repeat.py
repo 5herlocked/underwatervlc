@@ -20,6 +20,13 @@ state_flag = False
 perma_state = GPIO.LOW
 
 
+def progress_bar(percent_done, bar_length=50):
+    done_length = int(bar_length * percent_done / 100)
+    bar = '=' * done_length + '-' * (bar_length - done_length)
+    sys.stdout.write('[%s] %f%s\r' % (bar, percent_done, '%'))
+    sys.stdout.flush()
+
+
 def interrupt_handler(sig, frame):
     print("You've pressed Ctrl+C!")
     logging.info("Program ending")
@@ -32,6 +39,8 @@ def create_transmission(bitstream, times_to_multiply):
 
 
 def transmit(transmission_bits):
+    total_bits = len(transmission_bits)
+    counter = 0
     try:
         # Pin Setup:
         GPIO.setmode(GPIO.BOARD)
@@ -40,7 +49,9 @@ def transmit(transmission_bits):
         GPIO.setup(output_pin, GPIO.OUT, initial=GPIO.LOW)
         for bit in transmission_bits:
             GPIO.output(output_pin, int(bit))
+            counter += 1
             logging.info("Transmitted: {0}".format(bit))
+            progress_bar((counter + 1)/total_bits * 100, 30)
             time.sleep(1/frequency)
     finally:
         GPIO.cleanup(output_pin)
@@ -98,7 +109,7 @@ def main(argv):
             frequency = int(arg)
         elif opt in ('-r', '--random'):
             random_flag = True
-            random_size = arg
+            random_size = int(arg)
         elif opt in ('-t', '--times'):
             times = int(arg)
 
