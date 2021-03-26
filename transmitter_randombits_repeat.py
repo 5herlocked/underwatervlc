@@ -129,9 +129,12 @@ def main(argv):
         random_bits = generate_random_bitstream(random_size)
         logging.info("Generated bitstream: {0}".format(random_bits))
         transmission = create_transmission(random_bits, times)
+        f = open('raw_bitsream_{0}Hz_{1}_cycles-{2}_bits.txt'.format(frequency, times, random_size), "w+")
+        f.write(transmission)
         print("Transmitting")
         logging.info("Starting Transmission")
         transmit(transmission)
+        logging.info("Transmisssion Ended")
     else:
         print('No flags set, exiting')
         usage()

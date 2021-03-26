@@ -81,7 +81,7 @@ def main(argv):
         sys.exit(2)
 
     if len(argv) == 0:
-        print('Using default values of WVGA at 100fps')
+        print('Using default values of WVGA at 100fps and defualt output name of date time')
 
     for opt, arg in opts:
         if opt == '-h':
@@ -99,6 +99,8 @@ def main(argv):
             exit()
 
     init.camera_resolution, init.camera_fps = get_res_framerate(possible_res_string, possible_frame_string)
+
+    print('Resolution: {0}, Frame rate: {1}'.format(init.camera_resolution, init.camera_fps))
     
     status = cam.open(init)
     if status != sl.ERROR_CODE.SUCCESS:
