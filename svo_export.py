@@ -8,7 +8,9 @@ import glob
 
 
 def usage():
-    print('svo_export.py -f <file_path> -o <output_name>')
+    print('svo_export.py -a -v -f <file_path> -o <output_name>')
+    print('-a or --all\t: Use this if you want video, png sequences and depth sequences')
+    print('-v or --video\t: Use this if you only want the video')
     print('-f or --file\t: File path of the svo file to export')
     print('-o or --output\t: Output names for the mp4 and obj files')
     print('-d or --folder\t: Folder path full of svo files that need to be exported')
@@ -21,16 +23,18 @@ def progress_bar(percent_done, bar_length=50):
     sys.stdout.flush()
 
 
-def export(file, output_name):
+def export(file, output_name, video_only):
     # Make directory to put the video, depth image sequences and SBS pngs
     video_path = "{0}/".format(output_name)
-    png_path = video_path + "png_sequences/"
-    depth_path = video_path + "depth_sequences/"
+    if not video_only:
+        png_path = video_path + "png_sequences/"
+        depth_path = video_path + "depth_sequences/"
 
     try:
         os.makedirs(video_path)
-        os.makedirs(png_path)
-        os.makedirs(depth_path)
+        if not video_only:
+            os.makedirs(png_path)
+            os.makedirs(depth_path)
     except OSError:
         print('Creation of directories failed')
         exit()
@@ -90,7 +94,8 @@ def export(file, output_name):
 
             cam.retrieve_image(left_image, sl.VIEW.LEFT)
             cam.retrieve_image(right_image, sl.VIEW.RIGHT)
-            cam.retrieve_measure(depth_image, sl.MEASURE.DEPTH)
+            if not video_only:
+                cam.retrieve_measure(depth_image, sl.MEASURE.DEPTH)
 
             svo_image_sbs_rgba[0:height, 0:width, :] = left_image.get_data()
             svo_image_sbs_rgba[0:, width:, :] = right_image.get_data()
@@ -98,9 +103,10 @@ def export(file, output_name):
             ocv_image_sbs_rgb = cv2.cvtColor(svo_image_sbs_rgba, cv2.COLOR_RGBA2RGB)
 
             video_writer.write(ocv_image_sbs_rgb)
-            cv2.imwrite(depth_path + '{0}-{1}.png'.format(output_name, svo_position),
-                        depth_image.get_data().astype(np.uint16))
-            cv2.imwrite(png_path + '{0}-{1}.png'.format(output_name, svo_position), ocv_image_sbs_rgb)
+            if not video_only:
+                cv2.imwrite(depth_path + '{0}-{1}.png'.format(output_name, svo_position),
+                            depth_image.get_data().astype(np.uint16))
+                cv2.imwrite(png_path + '{0}-{1}.png'.format(output_name, svo_position), ocv_image_sbs_rgb)
 
             progress_bar((svo_position + 1) / nb_frames * 100, 30)
 
@@ -116,9 +122,10 @@ def main(argv):
     file = ""
     output_name = ""
     folder_flag = False
+    video_only = False
     folder_path = ""
     try:
-        opts, args = getopt.getopt(argv, "hd:f:o:", ["folder=", "file=", "output="])
+        opts, args = getopt.getopt(argv, "hvad:f:o:", ["help=", "video", "all", "folder=", "file=", "output="])
     except getopt.GetoptError:
         usage()
         sys.exit(2)
@@ -127,6 +134,10 @@ def main(argv):
         if opt == '-h':
             usage()
             sys.exit()
+        elif opt in ('-v', '--video'):
+            video_only = True
+        elif opt in ('-a', '-all'):
+            video_only = False
         elif opt in ('-d', '--folder'):
             folder_flag = True
             folder_path = arg
@@ -177,9 +188,9 @@ def main(argv):
             if path.startswith(".\\"):
                 mod_path = path.removeprefix('.\\')
             mod_path = mod_path.removesuffix('.svo')
-            export(path, mod_path)
+            export(path, mod_path, video_only)
     else:
-        export(file, output_name)
+        export(file, output_name, video_only)
 
 
 if __name__ == '__main__':
