@@ -25,14 +25,14 @@ def progress_bar(percent_done, bar_length=50):
 
 def export(file, output_name, video_only):
     # Make directory to put the video, depth image sequences and SBS pngs
-    video_path = "{0}/".format(output_name)
     if not video_only:
+        video_path = "{0}/".format(output_name)
         png_path = video_path + "png_sequences/"
         depth_path = video_path + "depth_sequences/"
 
     try:
-        os.makedirs(video_path)
         if not video_only:
+            os.makedirs(video_path)
             os.makedirs(png_path)
             os.makedirs(depth_path)
     except OSError:
@@ -71,7 +71,7 @@ def export(file, output_name, video_only):
     right_image = sl.Mat()
     depth_image = sl.Mat()
 
-    video_writer = cv2.VideoWriter(video_path + '{0}.avi'.format(output_name),
+    video_writer = cv2.VideoWriter('{0}.avi'.format(output_name),
                                    cv2.VideoWriter_fourcc('M', '4', 'S', '2'),
                                    max(cam.get_camera_information().camera_fps, 25), (width_sbs, height))
 

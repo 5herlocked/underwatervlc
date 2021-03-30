@@ -8,7 +8,7 @@ cam = sl.Camera()  # Initialise Camera
 
 
 def update_sysout(frames_grabbed, frames_missed):
-    sys.stdout.write('Frames Grabbed:{0}\rFrames Missed: {1}'.format(frames_grabbed, frames_missed))
+    sys.stdout.write('Frames Grabbed:{0}\tFrames Missed: {1}\r'.format(frames_grabbed, frames_missed))
     sys.stdout.flush()
 
 
