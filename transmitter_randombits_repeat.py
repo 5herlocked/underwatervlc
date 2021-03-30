@@ -31,6 +31,7 @@ def interrupt_handler(sig, frame):
     print("You've pressed Ctrl+C!")
     logging.info("Program ending")
     GPIO.cleanup(output_pin)
+    sys.stdout.flush()
     sys.exit(0)
 
 

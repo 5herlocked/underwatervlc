@@ -7,6 +7,11 @@ import getopt
 cam = sl.Camera()  # Initialise Camera
 
 
+def update_sysout(frames_grabbed, frames_missed):
+    sys.stdout.write('Frames Grabbed:{0}\rFrames Missed: {1}'.format(frames_grabbed, frames_missed))
+    sys.stdout.flush()
+
+
 def interrupt_handler(sig, frame):
     # End camera recording
     cam.disable_recording()
@@ -117,9 +122,15 @@ def main(argv):
         exit(1)
 
     runtime = sl.RuntimeParameters()
+    frames_grabbed = 0
+    frames_missed = 0
 
     while True:
-        cam.grab(runtime)
+        if cam.grab(runtime) == sl.ERROR_CODE.SUCCESS:
+            frames_grabbed += 1
+        else:
+            frames_missed += 1
+        update_sysout(frames_grabbed, frames_missed)
 
 
 if __name__ == '__main__':
