@@ -2,11 +2,6 @@ import pyzed.sl as sl
 import getopt
 import sys
 
-WVGA = (672, 376, [15, 30, 60, 100])
-HD720 = (1280, 720, [15, 30, 60])
-HD1080 = (1920, 1080, [15, 30])
-ULTRAHD = (2208, 1242, [15])
-
 
 def usage():
     print('svo_verification.py -f <file_path> -v <expected_resolution> -r <expected_frame_rate>')

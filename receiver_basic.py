@@ -1,9 +1,10 @@
+from utilities import *
+
 import logging
 import signal
 import subprocess
-import sys
-import time
 import getopt
+import time
 
 import Jetson.GPIO as GPIO
 
@@ -18,24 +19,6 @@ def convert_gpio_to_value(gpio_value):
         return 1
     else:
         return 0
-
-
-def pretty_bits(bits):
-    prettified_bits = ""
-
-    i = 0
-    internal_counter = 0
-    while i < len(bits):
-        prettified_bits += str(bits[i])
-        i += 1
-        internal_counter += 1
-        if internal_counter == 8:
-            prettified_bits += " "
-        if internal_counter == 16:
-            prettified_bits += "\n"
-            internal_counter = 0
-
-    return prettified_bits
 
 
 def interrupt_handler(sig, frame):

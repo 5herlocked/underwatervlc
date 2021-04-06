@@ -1,9 +1,9 @@
 from datetime import *
+from utilities import *
 
 import Jetson.GPIO as GPIO
 
 import signal
-import sys
 import time
 import logging
 import getopt
@@ -20,13 +20,6 @@ state_flag = False
 perma_state = GPIO.LOW
 
 
-def progress_bar(percent_done, bar_length=50):
-    done_length = int(bar_length * percent_done / 100)
-    bar = '=' * done_length + '-' * (bar_length - done_length)
-    sys.stdout.write('[%s] %f%s\r' % (bar, percent_done, '%'))
-    sys.stdout.flush()
-
-
 def interrupt_handler(sig, frame):
     print("You've pressed Ctrl+C!")
     logging.info("Program ending")
@@ -39,7 +32,7 @@ def create_transmission(bitstream, times_to_multiply):
     return bitstream * times_to_multiply  # multiplies it by the number of times to be repeated
 
 
-def transmit(transmission_bits):
+def transmit(transmission_bits, start_time):
     total_bits = len(transmission_bits)
     counter = 0
     try:
@@ -50,8 +43,10 @@ def transmit(transmission_bits):
         GPIO.setup(output_pin, GPIO.OUT, initial=GPIO.LOW)
         for bit in transmission_bits:
             GPIO.output(output_pin, int(bit))
+            current_time = time.perf_counter_ns()
+            diff_time = current_time - start_time
             counter += 1
-            logging.info("Transmitted: {0}".format(bit))
+            logging.info("Transmitted: {0}".format(bit), extra={'time': diff_time})
             progress_bar((counter + 1)/total_bits * 100, 30)
             time.sleep(1/frequency)
     finally:
@@ -126,7 +121,7 @@ def main(argv):
         # logging config
         # ToDo: Change the filename here if in the future our datasets change
         logging.basicConfig(filename='transmitter_{0}Hz_{1}_cycles-{2}_bits.log'.format(frequency, times, random_size),
-                            level=logging.INFO, format='%(asctime)s %(message)s')
+                            level=logging.INFO, format='%(time)s: %(message)s')
         random_bits = generate_random_bitstream(random_size)
         logging.info("Generated bitstream: {0}".format(random_bits))
         transmission = create_transmission(random_bits, times)
@@ -134,7 +129,9 @@ def main(argv):
         f.write(transmission)
         print("Transmitting")
         logging.info("Starting Transmission")
-        transmit(transmission)
+        start_time = time.perf_counter_ns()
+        logging.info("Start Time", extra={'time': start_time})
+        transmit(transmission, start_time)
         logging.info("Transmisssion Ended")
     else:
         print('No flags set, exiting')

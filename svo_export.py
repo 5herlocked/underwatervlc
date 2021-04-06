@@ -1,10 +1,11 @@
 import numpy as np
 import pyzed.sl as sl
 import getopt
-import sys
 import cv2
 import os
 import glob
+
+from utilities import *
 
 
 def usage():
@@ -14,13 +15,6 @@ def usage():
     print('-f or --file\t: File path of the svo file to export')
     print('-o or --output\t: Output names for the mp4 and obj files')
     print('-d or --folder\t: Folder path full of svo files that need to be exported')
-
-
-def progress_bar(percent_done, bar_length=50):
-    done_length = int(bar_length * percent_done / 100)
-    bar = '=' * done_length + '-' * (bar_length - done_length)
-    sys.stdout.write('[%s] %f%s\r' % (bar, percent_done, '%'))
-    sys.stdout.flush()
 
 
 def export(file, output_name, video_only):
