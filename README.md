@@ -22,8 +22,9 @@
    **NSF REU Students and UG Research Assistants**
    - Shardul Vaidya, REU, B.S in CS, Georgia State University (starting M.S. in CS from Fall 2021)
    - Kehinde Adedara, REU, B.S. in CS, Georgia State University (graduating in summer 2021)
-   - Jarred Cain, REU, B.S. in CS and Honors Thesis candidate, Georgia State University (senior from Fall 2021)
    - Melanie Gipson, REU, B.S. in CS, Georgia State University (senior from Fall 2021)
+   - Razat Sutradhar, REU, B.S. in CS, Georgia State University (senior from Fall 2021)
+   - Jarred Cain, UG Research Assistant, B.S. in CS and Honors Thesis candidate, Georgia State University (senior from Fall 2021)
    - Tony Lu, U.G. Research Assistant, B.S. in CS (sophomore from Fall 2021)
    
  
