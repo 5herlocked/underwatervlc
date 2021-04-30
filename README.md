@@ -43,7 +43,7 @@ Thrust 2 - Photo-Acoustic Underwater Communication Feasibility Studies. This thr
 
 2. Partnership with Gwinnett country Water Innovation Center (Water Tower) on creation of infrastructure for underwater communication, sensing and robotics research and education.
 
-3. Collaboration with research group at Norwegian University of Science and Technology (NTNU) on acoustic and optical wireless networking research, involving deployment of VLC nodes in Norway waters.
+3. Collaboration with research group at Norwegian University of Science and Technology (NTNU) on acoustic and optical wireless networking research, involving deployment of VLC nodes in Norwegian waters.
 
 
 ## Publications
