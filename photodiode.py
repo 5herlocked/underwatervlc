@@ -28,14 +28,14 @@ output_name = 'photodiode_{}Hz'.format(frequency)
 
 
 def log_data():
-    for time, value, voltage in datapoints:
-        logging.info("{}: Value {}, Voltage {}".format(time, value, voltage))
+    for deltaTime, value, voltage in datapoints:
+        logging.info("{}: Value {}, Voltage {}".format(deltaTime, value, voltage))
 
-    with open(output_name + "_data.csv", mode = 'w') as csv_file:
+    with open(output_name + "_data.csv", mode='w') as csv_file:
         csv_file = csv.writer(csv_file)
         csv_file.writerow(['time', 'value', 'voltage'])
-        for time, value, voltage in datapoints:
-            csv_file.writerow([time, value, voltage])
+        for deltaTime, value, voltage in datapoints:
+            csv_file.writerow([deltaTime, value, voltage])
 
 
 def interrupt_handler(sig, frame):
@@ -67,7 +67,7 @@ def main(argv):
     print("Started Polling")
     while True:
         datapoints.append((time.asctime(), chan.value, chan.voltage))
-        time.sleep(1/frequency)
+        time.sleep(1 / frequency)
 
 
 if __name__ == '__main__':
