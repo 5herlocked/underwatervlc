@@ -54,6 +54,13 @@ Coming Soon
 
 Coming Soon
 
+## Collaborators
+
+1. Dr. Melissa Meeker, Director of Gwinett County Water Innovation Tower
+
+2. Dr. Damiano Varagnolo and Dr. Hefeng Dong, Faculty at Norwegian University of Science and Technology 
+
+
 ## Funding
 This work has been supported by the National Science Foundation (NSF) under the grant EAGER: Experimental Characterization of Underwater Visible Light Channels for Photo-Acoustic Underwater Communication (CNS-2000475) and REU Supplement (CNS-2031872)
 
