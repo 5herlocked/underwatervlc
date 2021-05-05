@@ -56,9 +56,9 @@ Coming Soon
 
 ## Collaborators
 
-1. Dr. Melissa Meeker, Director of Gwinett County Water Innovation Tower
+1. Dr. Melissa Meeker, Director of Georgia Gwinett County Water Innovation Tower, USA
 
-2. Dr. Damiano Varagnolo and Dr. Hefeng Dong, Faculty at Norwegian University of Science and Technology 
+2. Dr. Damiano Varagnolo and Dr. Hefeng Dong, Faculty at Norwegian University of Science and Technology, Norway
 
 
 ## Funding
