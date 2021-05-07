@@ -27,21 +27,21 @@ datapoints = list()
 output_name = 'photodiode_{}Hz'.format(frequency)
 
 
-def log_data():
-    for deltaTime, value, voltage in datapoints:
-        logging.info("{}: Value {}, Voltage {}".format(deltaTime, value, voltage))
-
-    with open(output_name + "_data.csv", mode='w') as csv_file:
-        csv_file = csv.writer(csv_file)
-        csv_file.writerow(['time', 'value', 'voltage'])
-        for deltaTime, value, voltage in datapoints:
-            csv_file.writerow([deltaTime, value, voltage])
+# def log_data():
+#     for deltaTime, value, voltage in datapoints:
+#         logging.info("{}: Value {}, Voltage {}".format(deltaTime, value, voltage))
+#
+#     with open(output_name + "_data.csv", mode='w') as csv_file:
+#         csv_file = csv.writer(csv_file)
+#         csv_file.writerow(['time', 'value', 'voltage'])
+#         for deltaTime, value, voltage in datapoints:
+#             csv_file.writerow([deltaTime, value, voltage])
 
 
 def interrupt_handler(sig, frame):
     print("You've pressed Ctrl+C!")
-    print("Datapoints collected: {}".format(len(datapoints)))
-    log_data()
+    # print("Datapoints collected: {}".format()
+    # log_data()
     logging.info("Program ending")
     sys.stdout.flush()
     sys.exit(0)
