@@ -13,7 +13,7 @@ import random
 output_pin = 12  # Board Pin 12
 frequency = 30  # effectively a 30Hz transmission rate
 # variables for random bit transmission
-random_flag = False
+random_flag = True
 random_size = 500
 times = 1
 # variables for perma state transmission
@@ -60,7 +60,7 @@ def transmit(transmission_bits, start_time):
             GPIO.output(output_pin, int(bit))
             current_time = time.perf_counter_ns()
             diff_time = current_time - start_time
-            logs.append((diff_time, current_time))
+            logs.append((diff_time, bit))
             time.sleep(1/frequency)
     finally:
         GPIO.cleanup(output_pin)
@@ -102,7 +102,7 @@ def generate_random_bitstream(size):
 def main(argv):
     global output_pin, frequency, state_flag, perma_state, random_flag, random_size, times, output_name
     if len(argv) == 1:
-        print('Using default values of: Output Pin = Board 12, Frequency = 30 Hz')
+        print('Using default values of: Output Pin = Board 12, Frequency = 30 Hz, 500 random bits and 1 cycle')
     try:
         opts, args = getopt.getopt(argv, "hs:r:f:t:", ["state=", "random=", "frequency=", "times="])
     except getopt.GetoptError:
