@@ -67,7 +67,7 @@ def export(file, output_name, video_only):
 
     video_writer = cv2.VideoWriter('{0}.avi'.format(output_name),
                                    cv2.VideoWriter_fourcc('M', '4', 'S', '2'),
-                                   max(cam.get_camera_information().camera_fps, 25), (width_sbs, height))
+                                   cam.get_camera_information().camera_fps, (width_sbs, height))
 
     if not video_writer.isOpened():
         sys.stdout.write("OpenCV video writer cannot be opened. Please check .avi file path and write "
