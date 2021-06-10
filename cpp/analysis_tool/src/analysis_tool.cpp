@@ -26,11 +26,6 @@ enum SOURCE_TYPE {
     FOLDER
 };
 
-struct ROIData {
-    cv::Point2i startPoint{};
-    cv::Point2i endPoint{};
-};
-
 struct LogEntry {
     double deltaTime{};
     cv::Scalar frameAverage{};
@@ -48,7 +43,6 @@ struct Configuration {
 void parseArgs(int argc, char* argv[], Configuration& config);
 void analyseFolder(Configuration& config);
 int analyseVideo(Configuration& config);
-void roiCallback(int event, int x, int y, int flags, void* userData);
 void createCSV(const vector<LogEntry> &logs, const string &filename);
 void showUsage();
 
@@ -108,7 +102,6 @@ void parseArgs(int argc, char* argv[], Configuration& app_config) {
                 app_config.source = SOURCE_TYPE::SINGLE_VIDEO;
                 fs::path file_path = argv[++i];
                 app_config.location = file_path.string();
-                app_config.genericOutput = file_path.replace_extension().string();
             } else {
                 cout << "You have attempted to use 2 source flags. Please make up your mind." << endl;
                 showUsage();
@@ -127,7 +120,6 @@ void parseArgs(int argc, char* argv[], Configuration& app_config) {
 }
 
 int analyseVideo(Configuration &config) {
-    ROIData roi;
     cv::VideoCapture video(config.location.value());
     auto frameMeans = vector<LogEntry>();
 
@@ -136,40 +128,47 @@ int analyseVideo(Configuration &config) {
         exit(-1);
     }
 
-    cv::namedWindow("source vid", cv::WINDOW_AUTOSIZE);
-    cv::setMouseCallback("source vid", roiCallback, (void*)&roi);
+    // Material frames we need
+    cv::Mat frame;
 
-    cv::namedWindow("roi vid", cv::WINDOW_AUTOSIZE);
-    auto mask = cv::Rect(roi.startPoint, roi.endPoint);
+    bool readSuccess = video.read(frame);
+    if (!readSuccess) {
+        cout << "Unable to read the video" << endl;
+        return EXIT_FAILURE;
+    }
+
+    cv::namedWindow("source vid", cv::WINDOW_AUTOSIZE);
+    cv::imshow("source vid", frame);
+
+    cv::Rect roi = cv::selectROI("source vid", frame, true, false);
+
+    cv::Mat roiMask(frame, roi);
+
+    cv::imshow("roi vid", roiMask);
 
     double fps = video.get(cv::CAP_PROP_FPS);
-    double total_frames = video.get(cv::CAP_PROP_FRAME_COUNT);
-
-    // TODO: use fps and frame count
-    cv::InputArray lower_blue = cv::InputArray(std::vector({110, 50, 50}));
-    cv::InputArray upper_blue = cv::InputArray(std::vector({130, 255, 255}));
+    double totalFrames = video.get(cv::CAP_PROP_FRAME_COUNT);
 
     int position = 0;
 
     while (true) {
-        // Material frames we need
-        cv::Mat frame;
+        readSuccess = video.read(frame);
 
-        bool readSuccess = video.read(frame);
         if (!readSuccess) {
             cout << "Found end of video" << endl;
             break;
         }
-        cv::cvtColor(frame, frame, cv::COLOR_BGR2RGB);
+
         // increment position so we can keep track of where we are in dT
         position += 1;
 
         // This should be the ROI mat
-        cv::Mat roiMask = frame(mask);
+        roiMask = frame(roi);
+//        cv::imshow("roi vid", roiMask);
 
         // TODO: Make a vec of scalars that stores our values, then log them
         // This average will be more blue when the LED is on, and less blue when the LED is off
-        cv::Scalar average = cv::mean(frame, roiMask);
+        cv::Scalar average = cv::mean(roiMask);
         double deltaTime = position/fps;
 
         // TODO: threshold to find the bit value
@@ -178,7 +177,7 @@ int analyseVideo(Configuration &config) {
             average,
             1
         });
-        progressBar((float)position/total_frames, 30);
+        progressBar((float)position / totalFrames, 30);
     }
 
     createCSV(frameMeans, config.genericOutput.value());
@@ -203,26 +202,15 @@ void analyseFolder(Configuration &config) {
     }
 }
 
-void roiCallback(int event, int x, int y, int flags, void *userData) {
-    auto* roi = (ROIData*) userData;
-
-    if (event == cv::EVENT_LBUTTONDOWN) {
-        // Left button down, capture start point
-        roi->startPoint = cv::Point2i(x, y);
-    } else if (event == cv::EVENT_LBUTTONUP) {
-        // Left button up, capture end point
-        roi->endPoint = cv::Point2i(x, y);
-    }
-}
-
 void createCSV(const vector<LogEntry> &logs, const string &filename) {
     fstream csvStream;
     csvStream.open(filename, ios::out);
 
-    csvStream << "Delta Time" << "," << "Frame Average" << "," << "Bit" << "\n";
+    csvStream << "Delta Time" << "," << "Blue" << "," << "Green" << ","<< "Red" << "," << "Bit" << "\n";
 
-    for (LogEntry entry : logs) {
-        csvStream << entry.deltaTime << "," << entry.frameAverage.val << "," << entry.deducedBit << "\n";
+    // frameAverage is of type double[4], we need to destructure it
+    for (const LogEntry& entry : logs) {
+        csvStream << entry.deltaTime << "," << entry.frameAverage.val[0] << ","<< entry.frameAverage.val[1] << ","<< entry.frameAverage.val[2] << "," << entry.deducedBit << "\n";
     }
 
     csvStream.close();
