@@ -35,8 +35,9 @@ def export(file, output_name, video_only):
         if not video_only:
             os.makedirs(png_path)
             os.makedirs(depth_path)
-    except OSError:
+    except OSError as e:
         print('Creation of directories failed')
+        print(e)
         exit()
     else:
         print('Directories created')
