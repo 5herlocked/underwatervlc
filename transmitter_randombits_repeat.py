@@ -28,7 +28,8 @@ logs = list()
 
 def interrupt_handler(sig, frame):
     print("You've pressed Ctrl+C!")
-    logging.info("Program ending")
+    log_data()
+    logging.info("Program ending", extra={'time': time.perf_counter()})
     GPIO.cleanup(output_pin)
     sys.stdout.flush()
     sys.exit(0)
@@ -58,11 +59,13 @@ def transmit(transmission_bits, start_time):
         GPIO.setup(output_pin, GPIO.OUT, initial=GPIO.LOW)
         for bit in transmission_bits:
             GPIO.output(output_pin, int(bit))
-            current_time = time.perf_counter_ns()
+            current_time = time.perf_counter()
             diff_time = current_time - start_time
             logs.append((diff_time, bit))
+            progress_bar(float(len(logs) / len(transmission_bits)) * 100, 30)
             time.sleep(1/frequency)
     finally:
+        GPIO.output(output_pin, GPIO.LOW)
         GPIO.cleanup(output_pin)
 
     log_data()
@@ -126,6 +129,7 @@ def main(argv):
 
     # ToDo: Change the filename here if in the future our datasets change
     output_name = 'transmitter_{0}Hz_{1}_cycles-{2}_bits'.format(frequency, times, random_size)
+    print(output_name)
 
     signal.signal(signal.SIGINT, interrupt_handler)
 
@@ -140,20 +144,19 @@ def main(argv):
         logging.basicConfig(filename=output_name + ".log",
                             level=logging.INFO, format='%(time)s: %(message)s')
         random_bits = generate_random_bitstream(random_size)
-        logging.info("Generated bitstream: {0}".format(random_bits))
+        currentTime = time.perf_counter()
+        logging.info("Generated bitstream: {0}".format(random_bits), extra={'time': currentTime})
         transmission = create_transmission(random_bits, times)
 
         with open(output_name + "_raw.txt", mode='w') as file:
             file.write(transmission)
 
         print("Transmitting")
-        logging.info("Starting Transmission")
-
-        start_time = time.perf_counter_ns()
-        logging.info("Start Time", extra={'time': start_time})
+        start_time = time.perf_counter()
+        logging.info("Starting Transmission", extra={'time': start_time})
 
         transmit(transmission, start_time)
-        logging.info("Transmisssion Ended")
+        logging.info("Transmission Ended", extra={'time': time.perf_counter()})
     else:
         print('No flags set, exiting')
         usage()
