@@ -1,6 +1,6 @@
 import csv
 from datetime import *
-from utilities import *
+from python.utilities import *
 
 import Jetson.GPIO as GPIO
 

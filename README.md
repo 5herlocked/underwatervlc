@@ -1,65 +1,68 @@
-## Jetson Nano Setup Instructions
-Follow the steps given to prepare the Jetson Nano:
-1. Download the [Jetson Developer Kit Image](https://developer.nvidia.com/jetson-nano-2gb-sd-card-image)
-2. Format the SD card with the formatter from the [SDA](https://www.sdcard.org/downloads/formatter/sd-memory-card-formatter-for-windows-download/)
-2. Write the image to an SD card using one of the following:
-	* Unix Disk Utilities (Disk Analyser) using the restore image/restore disk function
-	* Windows Disk Manager (diskmgmgt) using the restore image/restore disk function
-	* Balena Etcher using the flash button
-3. Insert the SD card into the Jetson Nano
-4. Boot it up, follow setup instructions until you boot into the linux desktop (it will restart once)
-5. Run the command `sudo apt-get update` and follow instructions to update all tools
-6. Run the command `sudo apt-get upgrade` and follow instructions to upgrade all tools
-7. Ensure python 3 is installed by running the command `python3 --version` if you get an output it is installed and proceed to step 9
-8. Python3 is not installed: install using the command `sudo apt-get install python3`
-9. Python3 is installed and all packages are updated to the latest version. Install the wheel package using `pip3 install wheel`
-10. Install the Jetson.GPIO package with the command `pip3 install Jetson.GPIO`
-11. Visit the [GitHub page](https://github.com/NVIDIA/jetson-gpio) for the Jetson.GPIO package and follow the instructions for setting user permissions
-11. Follow [instructions](https://docs.github.com/en/free-pro-team@latest/github/authenticating-to-github/generating-a-new-ssh-key-and-adding-it-to-the-ssh-agent) to make an SSH key, adding it to your account in GitHub and use it to authenticate with GitHub.
-12. Clone our github repository by typing in `git clone git@github.com:ashwinashok/underwatervlc.git` and the following the prompt to get our code
+# Underwater Visible Light and Camera Communication
 
-Next instructions are [here](#Transmitter-Instructions):
+## Abstract
+ 
+ Much of underwater wireless communication, so far, has been attributed to the use of acoustic frequencies due to the significantly low absorption than radio frequencies (RF). Ongoing advances in using light for communication through the concept of visible light communication (VLC) make optical wireless relevant to advancing the state--of--the-- art in underwater wireless communication systems. The optical spectrum presents a favorable mode for communicating underwater due to the low signal absorption levels, particularly in the ultraviolet, violet, blue and green wavelengths. Prior work in underwater VLC has largely been theoretical and this research takes a radical high-risk approach to develop empirical models for underwater VLC across real-world configurations and settings. The research takes a transformative approach and explores photo-acoustic hybrid communication in which acoustic and optical wireless communication modes co-exist and complement each other. Photo-acoustic underwater communication modalities can help advance plethora of applications including underwater navigation, exploration, sensing and tactical communications. This research advances the field of underwater networking by bridging the knowledge gap in building realistic underwater photo-acoustic systems through extensive experimentation in real-world conditions and creates a rich open public dataset. This research maintains a strategic collaboration with the Gwinnett County Water Innovation Center near Atlanta, Georgia, thus expanding the outreach of this work and advancing underwater research using advanced facilities. In addition to dissemination of research outcomes through publications, the research involves female student groups from the university Girls-Who-Code (GWC) chapter in underwater research data collection and experiments.
 
-## Jetson Xavier Setup Instructions
-These are the steps to get the Xavier's setup and ready for experimentation:
-1. Download the [Jetson Xavier NX Developer Kit Image](https://developer.nvidia.com/jetson-nx-developer-kit-sd-card-image)
-2. Format the SD card with the formatter from the [SDA](https://www.sdcard.org/downloads/formatter/sd-memory-card-formatter-for-windows-download/)
-2. Write the image to an SD card using one of the following:
-	* Unix Disk Utilities (Disk Analyser) using the restore image/restore disk function
-	* Windows Disk Manager (diskmgmgt) using the restore image/restore disk function
-	* Balena Etcher using the flash button
-3. Insert the SD card into the Jetson Xavier NX.
-4. Boot it up, follow setup instructions until you boot into the linux desktop (it will restart once)
-5. Run the command `sudo apt-get update` and follow instructions to update all tools
-6. Run the command `sudo apt-get upgrade` and follow instructions to upgrade all tools
-7. Ensure python 3 is installed by running the command `python3 --version` if you get an output, it is installed and proceed to step 9
-8. Python3 is not installed: install using the command `sudo apt-get install python3`
-9. Python3 is installed and all packages are updated to the latest version. Install the wheel package using `pip3 install wheel`
-10. Install the Jetson.GPIO package with the command `pip3 install Jetson.GPIO`
-11. Visit the [GitHub page](https://github.com/NVIDIA/jetson-gpio) for the Jetson.GPIO package and follow the instructions for setting user permissions
-11. Follow [instructions](https://docs.github.com/en/free-pro-team@latest/github/authenticating-to-github/generating-a-new-ssh-key-and-adding-it-to-the-ssh-agent) to make an SSH key, adding it to your account in GitHub and use it to authenticate with GitHub.
-12. Clone our github repository by typing in `git clone git@github.com:ashwinashok/underwatervlc.git` and then follow the prompt to get our code
-13. Get the [ZED SDK](https://www.stereolabs.com/developers/release/) make it an executable and run it to install the ZED SDK
-14. You will need to install numpy and cython using the commands `pip3 install numpy` and then `pip3 install cython`
-14. Use the command `cd /usr/local/zed` and then run `python3 get_python_api.py` to install the python api for the ZED SDK.
+## Personnel
+  
+ **Principal Investigators**
+ 
+ - Dr. Ashwin Ashok, Assistant Professor in the Dept. of CS, Georgia State University
+   
+  **Students**
+  
+   - AbdulHaseeb Ahmed, M.S. Thesis Candidate, Georgia State University
+   - Sethuraman TV, M.S Thesis Candidate, Georgia State University
+   - Sathwik Chowda, M.S. Project Candidate, Georgia State University
+   - MD Rashed Rahman, Ph.D. Candidate, Georgia State University
+   - Khadija Ashraf, Ph.D. Candidate, Georgia State University
+   
+  
+   **NSF REU Students and UG Research Assistants**
+   - Shardul Vaidya, REU, B.S in CS, Georgia State University (starting M.S. in CS from Fall 2021)
+   - Kehinde Adedara, REU, B.S. in CS, Georgia State University (graduating in summer 2021)
+   - Melanie Gipson, REU, B.S. in CS, Georgia State University (senior from Fall 2021)
+   - Razat Sutradhar, REU, B.S. in CS, Georgia State University (senior from Fall 2021)
+   - Jarred Cain, UG Research Assistant, B.S. in CS and Honors Thesis candidate, Georgia State University (senior from Fall 2021)
+   - Tony Lu, U.G. Research Assistant, B.S. in CS (sophomore from Fall 2021)
+   
+ 
+## Research Direction
+  
+The major research objectives of this project are to:
 
-## LED Transmitter Instructions
-Follow the given steps to start transmitting on the Jetson Nanos:
-1. Connect the LED array positive diode to Board Pin 12
-2. Connect the LED ground pin to one of the GND pins on the Jetson
-3. Use the command `python3 transmitter.py -h` to get help on how to use the transmitter command. 
-4. There will be a file called `transmitter.log` this will contain all the logs including time stamps of each of the transmitted bits
+Thrust 1 - Empirical Modeling of Underwater VLC Channels. This thrust focuses on extensive underwater channel modeling experimentation and data collection in lab and real-world underwater sites. The data points are used to perform empirical modeling of underwater VLC channels along various spatial dimensions (horizontal, vertical, line-of-sight, non line-of-sight), along different physical parameters (salinity, turbidity, temperature and oiliness), and in mobile scenarios. 
 
-## Photodiode (PD) Receiver Instructions
-Follow the given steps to start receiving on the Xavier:
-1. Connect the Photo-diode to Board Pin 12 and stereo camera to the Xavier
-2. Connect Photo-diode ground to one of the GND pins on the Xavier
-3. Use the command `python3 receiver.py -h` to get help on how to use the receiver interface
-4. You will see live printed chunks of data as it receives a confirmed transmission.
-5. There will be a file called `receiver.log` this will contain all the logs including time stamps of each of the received bits
-6. There will be a folder called `recordings` in the same folder as the source code. It will contain all the recordings from the stereo cameras which show each receiving phase
+Thrust 2 - Photo-Acoustic Underwater Communication Feasibility Studies. This thrust focuses on the feasibility of integrating the hardware and software of optical wireless (UV and VLC), with acoustic systems. The research conducts experiments across different use-cases for photo-acoustic communication and sensing, particularly for navigation and tracking and device-device communication. In summary, the key outcomes of this research include empirical models for underwater VLC channels, insights from photo-acoustic communication feasibility experimental studies and open datasets for underwater VLC.
 
-## ZED Intructions
-Follow the given steps to start recording stereo recording with the Xavier:
-1. Connect the ZED Camera to the Jetson Xavier.
-2. Ensure it's being detected using the 
+
+## Educational and Outreach Activities
+
+1. Generation of a repository of underwater VLC and Camera communication datasets from experiments and data collection efforts conducted in this research.
+
+2. Partnership with Gwinnett country Water Innovation Center (Water Tower) on creation of infrastructure for underwater communication, sensing and robotics research and education.
+
+3. Collaboration with research group at Norwegian University of Science and Technology (NTNU) on acoustic and optical wireless networking research, involving deployment of VLC nodes in Norwegian waters.
+
+
+## Publications
+
+Coming Soon
+
+## Code and Data
+
+Coming Soon
+
+## Collaborators
+
+1. Dr. Melissa Meeker, Director of Georgia Gwinett County Water Innovation Tower, USA
+
+2. Dr. Damiano Varagnolo and Dr. Hefeng Dong, Faculty at Norwegian University of Science and Technology, Norway
+
+
+## Funding
+This work has been supported by the National Science Foundation (NSF) under the grant EAGER: Experimental Characterization of Underwater Visible Light Channels for Photo-Acoustic Underwater Communication (CNS-2000475) and REU Supplement (CNS-2031872)
+
+
+
