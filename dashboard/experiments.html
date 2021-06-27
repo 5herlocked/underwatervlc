@@ -1,0 +1,207 @@
+<!DOCTYPE HTML>
+<!--
+	Phantom by HTML5 UP
+	html5up.net | @ajlkn
+	Free for personal and commercial use under the CCA 3.0 license (html5up.net/license)
+-->
+<html>
+	<head>
+		<title>Filler</title>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+		<link rel="stylesheet" href="assets/css/main.css" />
+		<link rel="stylesheet" href="style.css">
+		<noscript><link rel="stylesheet" href="assets/css/noscript.css" /></noscript>
+
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+	</head>
+	<body class="is-preload">
+		<!-- Wrapper -->
+			<div id="wrapper">
+
+				<!-- Header -->
+					<header id="header">
+						<div class="inner">
+
+							<!-- Logo -->
+								<a href="index.html" class="logo">
+									<span class="symbol"><img src="images/logo.png" alt="" /></span><span class="title">DASHBOARD</span>
+
+								</a>
+            
+                            
+
+							<!-- Nav -->
+								<nav>
+									<ul>
+										<li><a href="#menu">Menu</a></li>
+									</ul>
+								</nav>
+
+						</div>
+					</header>
+
+				<!-- Menu -->
+					<nav id="menu">
+						<h2>Menu</h2>
+						<ul>
+							<li><a href="index.html">Home</a></li>
+							<li><a href="generic.html">Ipsum veroeros</a></li>
+							<li><a href="generic.html">Tempus etiam</a></li>
+							<li><a href="generic.html">Consequat dolor</a></li>
+							<li><a href="elements.html">Elements</a></li>
+						</ul>
+					</nav>
+
+				<!-- Main -->
+					<div id="main">
+						<div class="inner">
+							<h1 style="text-align:center;">Vertical Experiments</h1>
+                            <br>
+                            <br>
+                            <br>
+
+                            <center>
+                                <figure>
+                           
+                            
+                        </figure>
+                        </center>
+                            <div class="table-wrapper" ">
+                                <table style="text-align:center;"class="alt">
+                                    <thead>
+                                        <tr>
+                                            <th style="text-align:center;">Transmission</th>
+                                            <th style="text-align:center;">Name</th>
+                                            <th style="text-align:center;">FPS</th>
+                                            <th style="text-align:center;">Cycles</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td >5Hz</td>
+                                            <td><a href="generic.html">5Hz_15fps_Vertical
+                                            </a></td>
+                                            <td>15</td>
+                                            <td>5</td>
+                                            
+                                        </tr>
+                                        <tr>
+                                            <td>15Hz</td>
+                                            <td><a href="generic.html">
+                                                15Hz_30fps_Vertical
+                                              </a></td>
+                                            <td>30</td>
+                                            <td>15</td>
+                                        </tr>
+                                        <tr>
+                                            <td>25Hz</td>
+                                            <td><a href="generic.html">
+                                                25Hz_100fps_Vertical
+                                              </a></td>
+                                            <td>100</td>
+                                            <td>25</td>
+                                        </tr>
+                                        <tr>
+                                            <td>30Hz</td>
+                                            <td><a href="generic.html">
+                                                30Hz_60fps_Vertical
+                                             </a></td>
+                                            <td>60</td>
+                                            <td>30</td>
+                                        </tr>
+                                        <tr>
+                                            <td>50Hz</td>
+                                            <td><a href="generic.html">
+                                                50Hz_100fps_Vertical</a></td>
+                                            <td>100</td>
+                                            <td>50</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                            <br>
+                            <br>
+                            <br>
+
+                            
+                            <div>
+                            <select name="dropdown" id="formaction">
+                                <option value="5Hz_15fps_Vertical">5Hz_15fps_Vertical</option>
+                                <option value="15Hz_30fps_Vertical">15Hz_30fps_Vertical</option>
+                                <option value="25Hz_100fps_Vertical">25Hz_100fps_Vertical</option>
+                                <option value="30Hz_60fps_Vertical">30Hz_60fps_Vertical</option>
+                                <option value="50Hz_100fps_Vertical">50Hz_100fps_Vertical</option>
+                             </select> 
+                             <center>
+                             <button style="background-color: black;margin-top: 5%;"onclick="loadData()">Submit</button>
+                             </center>
+                            </div>
+
+
+
+
+                            <script src="https://code.highcharts.com/highcharts.js"></script>
+                            <script src="https://code.highcharts.com/modules/series-label.js"></script>
+                            <script src="https://code.highcharts.com/modules/exporting.js"></script>
+                            <script src="https://code.highcharts.com/modules/export-data.js"></script>
+                            <script src="https://code.highcharts.com/modules/accessibility.js"></script>
+
+
+
+                            <figure class="highcharts-figure">
+
+
+                                <div id="container-a" class="chart"></div>
+                                <p style="text-align:center;" class="highcharts-description">
+                                    This plot illustrates the pixel intensity levels of RGB channels for the given input video
+                                </p>
+            
+                                <br>
+                                <br>
+                                <br>
+                                <br>
+            
+                                <div id="container-b" class="chart"></div>
+                                <p style="text-align:center;" class="highcharts-description">
+                                    This plot illustrates the Blue pixel intensity for the given input video
+                                </p>
+            
+                                <div id="container-c" class="chart"></div>
+            
+                                <p style="text-align:center;" class="highcharts-description">
+                                    This plot illustrates Transmitted VS Received Bits
+                                </p>
+            
+            
+                            </figure>
+                            <br>
+                            <br>
+                            <br>
+                            <br>
+
+
+                <script src="graph-data/meanBlueLevels_5Hz_15fps_Vertical.js"></script>
+				<script src="graph-data/meanRedLevels_5Hz_15fps_Vertical.js"></script>
+				<script src="graph-data/meanGreenLevels_5Hz_15fps_Vertical.js"></script>
+				<script src="graph-data/threshold_5Hz_15fps_Vertical.js"></script>
+                <script src="graph-data/position_5Hz_15fps_Vertical.js"></script>
+				<script src="graph-data/tranmsmitted_bits_5Hz_15fps_Vertical.js"></script>
+				<script src="graph-data/received_bits_5Hz_15fps_Vertical.js"></script>
+				<script src="script.js"></script>
+
+
+	<!-- Scripts -->
+		<script src="assets/js/jquery.min.js"></script>
+		<script src="assets/js/browser.min.js"></script>
+		<script src="assets/js/breakpoints.min.js"></script>
+		<script src="assets/js/util.js"></script>
+		<script src="assets/js/main.js"></script>
+        
+
+	</body>
+</html>

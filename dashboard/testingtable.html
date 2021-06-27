@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+
+
+<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+		<link rel="stylesheet" href="assets/css/main.css" />
+		<noscript><link rel="stylesheet" href="assets/css/noscript.css" /></noscript>
+</head>
+<body>
+<div class="container">
+	<div class="table-wrapper">
+	<table class="alt">
+		<thead>
+		<tr>
+			<th data-field="X_coordinates">
+			<span class="text-success">
+				X_coordinates
+			</span>
+			</th>
+			<th data-field="Y_coordinates">
+			<span class="text-success">
+				Y_coordinates
+			</span>
+			</th>
+			<th data-field="Width">
+			<span class="text-success">
+				Width
+			</span>
+			</th>
+			<th data-field="Height">
+				<span class="text-success">
+					Height
+				</span>
+				</th>
+		</tr>
+		</thead>
+	</table>
+	</div>
+</div>
+
+<!-- Include jQuery and other required
+files for Bootstrap -->
+<script src=
+"https://code.jquery.com/jquery-3.3.1.min.js">
+</script>
+
+
+<!-- Include the JavaScript file
+for Bootstrap table -->
+<script src=
+"https://unpkg.com/bootstrap-table@1.16.0/dist/bootstrap-table.min.js">
+</script>
+<script type="text/javascript">
+	$(document).ready(function () {
+
+	// Use the given data to create
+	// the table and display it
+	$('table').bootstrapTable({
+		data: mydata
+	});
+	});
+
+	// Specify the JSON data to be displayed
+	var mydata =
+	[
+		{"X_coordinates":342,"Y_coordinates":212,"Width":71,"Height":43}
+	];
+</script>
+</body>
+</html>
