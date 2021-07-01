@@ -26,7 +26,8 @@
    - Razat Sutradhar, REU, B.S. in CS, Georgia State University (senior from Fall 2021)
    - Jarred Cain, UG Research Assistant, B.S. in CS and Honors Thesis candidate, Georgia State University (senior from Fall 2021)
    - Tony Lu, U.G. Research Assistant, B.S. in CS (sophomore from Fall 2021)
-   
+   - Jiyoung Yoon, U.G Research Assistant, B.S. in CS (senior from fall 2021)
+
  
 ## Research Direction
   
