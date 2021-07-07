@@ -35,6 +35,13 @@ def interrupt_handler(sig, frame):
     sys.exit(0)
 
 
+def progress_bar(percent_done, bar_length=50):
+    done_length = int(bar_length * percent_done / 100)
+    bar = '=' * done_length + '-' * (bar_length - done_length)
+    sys.stdout.write('[%s] %f%s\r' % (bar, percent_done, '%'))
+    sys.stdout.flush()
+
+
 def create_transmission(bitstream, times_to_multiply):
     return bitstream * times_to_multiply  # multiplies it by the number of times to be repeated
 

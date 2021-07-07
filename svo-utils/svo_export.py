@@ -17,6 +17,13 @@ def usage():
     print('-d or --folder\t: Folder path full of svo files that need to be exported')
 
 
+def progress_bar(percent_done, bar_length=50):
+    done_length = int(bar_length * percent_done / 100)
+    bar = '=' * done_length + '-' * (bar_length - done_length)
+    sys.stdout.write('[%s] %f%s\r' % (bar, percent_done, '%'))
+    sys.stdout.flush()
+
+
 def export(file, output_name, video_only):
     # Make directory to put the video, depth image sequences and SBS pngs
     if not video_only:
