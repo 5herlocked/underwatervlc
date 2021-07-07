@@ -1,0 +1,1 @@
+const POSITION = [{"X_coordinates":346,"Y_coordinates":222,"Width":68,"Height":28}];
