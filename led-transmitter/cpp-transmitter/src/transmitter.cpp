@@ -14,6 +14,8 @@
 #include <iostream>
 #include <vector>
 #include <cmath>
+#include <csignal>
+#include <fstream>
 
 #include "getopt.h"
 #include "gpiod.h"
@@ -53,6 +55,7 @@ struct Configuration {
     optional<int> bits{};
     optional<double> frequency{};
     optional<int> cycles{};
+    optional<string> output{};
 };
 
 struct LogEntry {
@@ -64,13 +67,19 @@ struct LogEntry {
 // function definitions
 void parseArgs(int argc, char **argv, Configuration &config);
 
+void instantiateGPIO(gpiod_chip *chip, gpiod_line *pin);
+
 void setState(const Configuration &config);
 
 optional<vector<LogEntry>> transmit(const Configuration &config, const vector<int> &transmission);
 
 void preciseSleep(double seconds);
 
+void generateCSV(const vector<LogEntry>& logs, const Configuration &appConfig);
+
 void showUsage();
+
+void signalHandler(int signal);
 
 optional<double> getFrequency(long frequency);
 
@@ -82,6 +91,8 @@ optional<GPIO> toGPIO(const string &input);
 [[maybe_unused]] Configuration getTestConfiguration();
 
 [[maybe_unused]] vector<int> generateBitFlips(int size);
+
+void gpioCleanUp(gpiod_chip *pChip, gpiod_line *pLine);
 
 // Runner
 int main(int argc, char *argv[]) {
@@ -102,9 +113,17 @@ int main(int argc, char *argv[]) {
         }
     } else {
         // Improperly Configured
+        printf("It seems the configuration was improperly generated. Please use the -h flag to get the help prompt\n");
+        showUsage();
     }
 
-
+    if (logs.has_value()) {
+        // Logs successfully generated
+        generateCSV(logs.value(), appConfig);
+    } else {
+        // Logs failed to generate
+        printf("Logs did not generate\n");
+    }
     return 0;
 }
 
@@ -119,11 +138,12 @@ void parseArgs(int argc, char **argv, Configuration &config) {
             {"state",     required_argument, nullptr, 's'},
             {"random",    optional_argument, nullptr, 'r'},
             {"frequency", required_argument, nullptr, 'f'},
-            {"cycles",    required_argument, nullptr, 't'},
+            {"cycles",    required_argument, nullptr, 'c'},
+            {"output",    optional_argument, nullptr, 'o'},
             {nullptr,     no_argument,       nullptr, 0}
     };
     int optionIdx = 0;
-    while ((opt = getopt_long(argc, argv, "hs:r:f:t:", long_options, &optionIdx)) != -1) {
+    while ((opt = getopt_long(argc, argv, "hs:r:f:c:", long_options, &optionIdx)) != -1) {
         switch (opt) {
             case 0:
                 //TODO: No arguments, default config
@@ -153,18 +173,17 @@ void parseArgs(int argc, char **argv, Configuration &config) {
             case 't':
                 config.cycles = strtol(optarg, nullptr, 10);
                 break;
+            case 'o':
+                config.output = optarg;
+                break;
             default:
-                cout << "Unknown option: <" << opt << endl;
+                printf("Unknown option %s with argument %s", long_options[opt].name, optarg);
                 break;
         }
     }
 }
 
-// Sets the GPIO state to either ON or OFF
-void setState(const Configuration &config) {
-    struct gpiod_chip *chip;
-    struct gpiod_line *pin;
-
+void instantiateGPIO(gpiod_chip *chip, gpiod_line *pin) {
     chip = gpiod_chip_open_by_number(0);
 
     if (!chip) {
@@ -182,16 +201,26 @@ void setState(const Configuration &config) {
         cout << "GPIO pin failed to open" << endl;
         return;
     }
+}
+
+// Sets the GPIO state to either ON or OFF
+void setState(const Configuration &config) {
+    struct gpiod_chip *chip = nullptr;
+    struct gpiod_line *pin = nullptr;
+
+    instantiateGPIO(chip, pin);
 
     int pinRequest = gpiod_line_request_output(pin, "transmitter_out", config.state.value());
     if (!pinRequest) {
         // If pin request failed
+        printf("Pin request failed\n");
     }
 
     int stateRequest = gpiod_line_set_value(pin, config.state.value());
 
     if (!stateRequest) {
         // If set State Failed
+        printf("Set state request failed\n");
     }
 
     cout << "Holding state to " << config.state.value() << endl;
@@ -207,26 +236,10 @@ optional<vector<LogEntry>> transmit(const Configuration &config, const vector<in
     auto currentEntry = LogEntry{};
     auto logs = vector<LogEntry>();
 
-    struct gpiod_chip *chip;
-    struct gpiod_line *pin;
+    struct gpiod_chip *chip = nullptr;
+    struct gpiod_line *pin = nullptr;
 
-    chip = gpiod_chip_open_by_number(0);
-
-    if (!chip) {
-        // if chip opening failed
-        cout << "GPIO chip failed to open" << endl;
-        return nullopt;
-    }
-
-    // Referring to gpio79 as a part of chip0
-    // guessing that this is gpio board pin 12
-    pin = gpiod_chip_get_line(chip, OUT);
-
-    if (!pin) {
-        //
-        cout << "GPIO pin failed to open" << endl;
-        return nullopt;
-    }
+    instantiateGPIO(chip, pin);
 
     gpiod_line_request_output(pin, "transmitter_out", 0);
 
@@ -236,40 +249,46 @@ optional<vector<LogEntry>> transmit(const Configuration &config, const vector<in
     auto t_0 = chrono::high_resolution_clock::now();
     auto prevClock = chrono::high_resolution_clock::now();
 
+    for (int count = 0; count < config.cycles; ++count) {
+        for (int i : transmission) {
+            auto nextClock = chrono::high_resolution_clock::now();
 
-    for (int i : transmission) {
-        auto nextClock = chrono::high_resolution_clock::now();
+            int complete = gpiod_line_set_value(pin, i);
 
-        int complete = gpiod_line_set_value(pin, i);
+            if (complete != 0) {
+                // Transmission failed
+                failed += 1;
+                currentEntry.deltaTime = (t_0 - chrono::high_resolution_clock::now());
+                currentEntry.transmittedBit = nullopt;
+                currentEntry.message = "Bit dropped";
+                logs.push_back(currentEntry);
+            } else {
+                // Manage Logs
+                transmitted += 1;
+                currentEntry.deltaTime = (t_0 - chrono::high_resolution_clock::now());
+                currentEntry.transmittedBit = i;
+                currentEntry.message = nullopt;
+                logs.push_back(currentEntry);
+            }
 
-        if (complete != 0) {
-            // Transmission failed
-            failed += 1;
-            currentEntry.deltaTime = (t_0 - chrono::high_resolution_clock::now());
-            currentEntry.transmittedBit = nullopt;
-            currentEntry.message = "Bit dropped";
-            logs.push_back(currentEntry);
-        } else {
-            // Manage Logs
-            transmitted += 1;
-            currentEntry.deltaTime = (t_0 - chrono::high_resolution_clock::now());
-            currentEntry.transmittedBit = i;
-            currentEntry.message = nullopt;
-            logs.push_back(currentEntry);
+            progressBar((float)(transmitted/length), 30, transmitted, failed);
+
+            auto transmitClock = chrono::high_resolution_clock::now();
+
+            double sleepTime = frequency - ((transmitClock - nextClock).count() / 1e9);
+
+            // sleep for dT using a spinLock
+            preciseSleep(sleepTime);
         }
-
-        progressBar((float)transmitted/length, 30, transmitted, failed);
-
-        auto transmitClock = chrono::high_resolution_clock::now();
-
-        double sleepTime = frequency - ((transmitClock - nextClock).count() / 1e9);
-
-
-        // sleep for dT using a spinLock
-        preciseSleep(sleepTime);
     }
 
     printf("Transmitted: %i\t Failed: %i\n", transmitted, failed);
+    gpiod_line_set_value(pin, 0);
+
+    // Clean Up
+    gpiod_line_release(pin);
+    gpiod_chip_close(chip);
+
     return logs;
 }
 
@@ -308,12 +327,36 @@ void preciseSleep(double seconds) {
     while ((high_resolution_clock::now() - start).count() / 1e9 < seconds);
 }
 
+void generateCSV(const vector<LogEntry> &logs, const Configuration& config) {
+    fstream csvStream;
+    csvStream.open(config.output.value() + ".csv", ios::out);
+
+    csvStream << "deltaTime" << "," << "bit" << "," << "message" << "\n";
+
+    // frameAverage is of type double[4], we need to destructure it
+    for (const LogEntry &entry : logs) {
+        csvStream << entry.deltaTime->count() << "," << entry.transmittedBit.value() << "," << entry.message.value() << "\n";
+    }
+
+    csvStream.close();
+}
+
 void showUsage() {
-    cout << "" << endl;
+    printf("./transmitter -s <state> -r <bits> -f <frequency> -c <cycles> -o <output_name>\n");
+    printf("-s or --state\t: Set state of the transmitter to either ON or OFF\n");
+    printf("-r or --random\t: Define the number of random bits to generate a transmission\n");
+    printf("-f or --frequency\t: Define the frequency of the transmission\n");
+    printf("-c or --cycles\t: Define the number of times the transmission is to be repeated\n");
+    printf("-o or --output\t: Set the name of the logs\n");
+}
+
+void signalHandler(int signal) {
+    // TODO: Create the Signal Handler and finish the code for that
+    // Usually just gpio cleanup and such
+
 }
 
 // Helper functions
-
 optional<double> getFrequency(long frequency) {
     return (1.0/frequency);
 }
