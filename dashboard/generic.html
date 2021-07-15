@@ -1,0 +1,149 @@
+<!DOCTYPE HTML>
+<!--
+	Phantom by HTML5 UP
+	html5up.net | @ajlkn
+	Free for personal and commercial use under the CCA 3.0 license (html5up.net/license)
+-->
+<html>
+
+<head>
+	<title>Generic - Phantom by HTML5 UP</title>
+	<meta charset="utf-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+	<link rel="stylesheet" href="assets/css/main.css" />
+	<link rel="stylesheet" href="style.css">
+	<noscript>
+		<link rel="stylesheet" href="assets/css/noscript.css" />
+	</noscript>
+
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+</head>
+
+<body class="is-preload">
+	<!-- Wrapper -->
+	<div id="wrapper">
+
+		<!-- Header -->
+		<header id="header">
+			<div class="inner">
+
+				<!-- Logo -->
+				<a href="index.html" class="logo">
+					<span class="symbol"><img src="images/logo.png" alt="" /></span><span class="title">DASHBOARD</span>
+				</a>
+
+				<!-- Nav -->
+				<nav>
+					<ul>
+						<li><a href="#menu">Menu</a></li>
+					</ul>
+				</nav>
+
+			</div>
+		</header>
+
+		<!-- Menu -->
+		<nav id="menu">
+			<h2>Menu</h2>
+			<ul>
+				<li><a href="index.html">Home</a></li>
+				<li><a href="generic.html">Ipsum veroeros</a></li>
+				<li><a href="generic.html">Tempus etiam</a></li>
+				<li><a href="generic.html">Consequat dolor</a></li>
+				<li><a href="elements.html">Elements</a></li>
+			</ul>
+		</nav>
+
+		<!-- Main -->
+		<div id="main">
+			<div class="inner">
+				<h1 style="text-align:center;">5Hz_15fps_Vertical</h1>
+
+				<div class="embed-responsive embed-responsive-16by9">
+
+					<video class="embed-responsive-item" poster autoplay muted controls download
+						src="https://storage.googleapis.com/underwatervlc/underwater-website/underwater-website/video-data/50Hz_100fps_Vertical.mp4"
+						type="video/mp4"></video>
+
+				</div>
+
+
+				<!-- <video width="781" height="205" controls="" autoplay="">
+
+								<source src="file:///Users/sathwikchowda/Desktop/morselab/matlab-underwater/datasets/march-30/5Hz_15fps_Vertical.mp4" type="video/mp4">
+							  </video></span> -->
+
+				<script src="https://code.highcharts.com/highcharts.js"></script>
+				<script src="https://code.highcharts.com/modules/series-label.js"></script>
+				<script src="https://code.highcharts.com/modules/exporting.js"></script>
+				<script src="https://code.highcharts.com/modules/export-data.js"></script>
+				<script src="https://code.highcharts.com/modules/accessibility.js"></script>
+
+
+
+
+
+
+				<figure class="highcharts-figure">
+
+
+					<div id="container-a" class="chart"></div>
+					<p style="text-align:center;" class="highcharts-description">
+						This plot illustrates the pixel intensity levels of RGB channels for the given input video
+					</p>
+
+					<br>
+					<br>
+					<br>
+					<br>
+
+					<div id="container-b" class="chart"></div>
+					<p style="text-align:center;" class="highcharts-description">
+						This plot illustrates the Blue pixel intensity for the given input video
+					</p>
+
+					<div id="container-c" class="chart"></div>
+
+					<p style="text-align:center;" class="highcharts-description">
+						This plot illustrates Transmitted VS Received Bits
+					</p>
+
+
+				</figure>
+				<br>
+				<br>
+				<br>
+				<br>
+
+
+
+
+				<script src="graph-data/meanBlueLevels.js"></script>
+				<script src="graph-data/meanRedLevels.js"></script>
+				<script src="graph-data/meanGreenLevels.js"></script>
+				<script src="graph-data/threshold.js"></script>
+				<script src="graph-data/position.js"></script>
+				<script src="graph-data/tranmsmitted_bits.js"></script>
+				<script src="graph-data/received_bits.js"></script>
+				<script src="javascript.js"></script>
+
+
+			</div>
+		</div>
+
+
+
+		<!-- Scripts -->
+		<script src="assets/js/jquery.min.js"></script>
+		<script src="assets/js/browser.min.js"></script>
+		<script src="assets/js/breakpoints.min.js"></script>
+		<script src="assets/js/util.js"></script>
+		<script src="assets/js/main.js"></script>
+
+</body>
+
+</html>
